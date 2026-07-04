@@ -883,9 +883,6 @@
 
     /* ===== INIT ===== */
     document.addEventListener('DOMContentLoaded', function() {
-        newCaptcha('register');
-        newCaptcha('login');
-
         var session = localStorage.getItem(LS_SESSION);
         if (session) {
             var accounts = getAccounts();
