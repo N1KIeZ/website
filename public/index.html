@@ -384,7 +384,7 @@
         }
     </style>
 </head>
-<body>
+<body style="display:flex;flex-direction:column;">
 
 <nav id="main-nav">
     <a data-nav="home" class="active" onclick="showView('home')">home</a>
@@ -393,7 +393,7 @@
     <a data-nav="login" onclick="showView('auth');showAuthTab('login')">login</a>
 </nav>
 
-<div class="container" style="display:flex;flex-direction:column;min-height:calc(100vh - 80px);">
+<div class="container" style="flex:1;display:flex;flex-direction:column;min-height:0;">
 
     <!-- HOME -->
     <div id="view-home" class="view visible">
