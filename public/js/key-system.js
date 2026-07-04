@@ -72,6 +72,13 @@
         });
     }
 
+    async function redeemKey(key) {
+        return api('/redeem', {
+            method: 'POST',
+            body: JSON.stringify({ key: key.trim().toUpperCase() }),
+        });
+    }
+
     async function health() {
         return api('/health');
     }
@@ -79,6 +86,7 @@
     window.KeySystem = {
         validateKey: validateKey,
         checkKey: checkKey,
+        redeemKey: redeemKey,
         generateKeys: generateKeys,
         getStock: getStock,
         listKeys: listKeys,

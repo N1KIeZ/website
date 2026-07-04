@@ -1,21 +1,24 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
-    --ocean: #0077be;
-    --ocean-dark: #005a8c;
-    --turquoise: #40e0d0;
+    --purple-500: #a855f7;
+    --purple-600: #7c3aed;
+    --purple-700: #6d28d9;
+    --fuchsia: #d946ef;
     --sand: #f4a460;
     --sand-light: #f8c88a;
-    --bg: #0b141a;
-    --bg-card: #0f1a22;
-    --bg-elevated: #15222b;
-    --border: rgba(64, 224, 208, 0.12);
-    --border-focus: rgba(0, 119, 190, 0.5);
-    --text: #dce8f0;
-    --text-dim: #7a8f9e;
-    --text-muted: #4a5f6e;
+    --bg: #0d0812;
+    --bg-card: #120b1a;
+    --bg-elevated: #1a1028;
+    --border: rgba(168, 85, 247, 0.12);
+    --border-focus: rgba(124, 58, 237, 0.4);
+    --text: #ede9fe;
+    --text-dim: #a78bba;
+    --text-muted: #6b5b7b;
     --radius: 8px;
     --transition: 0.2s ease;
+    --ocean: var(--purple-600);
+    --turquoise: var(--purple-500);
 }
 
 html { font-size: 16px; }
@@ -28,9 +31,9 @@ body {
     min-height: 100vh;
     line-height: 1.5;
     background-image:
-        radial-gradient(ellipse 70% 45% at 50% 15%, rgba(0, 119, 190, 0.06), transparent 65%),
-        radial-gradient(ellipse 40% 35% at 80% 85%, rgba(64, 224, 208, 0.04), transparent 55%),
-        radial-gradient(ellipse 30% 30% at 15% 80%, rgba(244, 164, 96, 0.03), transparent 50%);
+        radial-gradient(ellipse 70% 45% at 50% 15%, rgba(124, 58, 237, 0.08), transparent 65%),
+        radial-gradient(ellipse 40% 35% at 80% 85%, rgba(168, 85, 247, 0.06), transparent 55%),
+        radial-gradient(ellipse 30% 30% at 15% 80%, rgba(217, 70, 239, 0.04), transparent 50%);
     background-attachment: fixed;
 }
 
@@ -53,19 +56,19 @@ body {
     width: 56px;
     height: 56px;
     margin: 0 auto 16px;
-    background: linear-gradient(135deg, var(--ocean), var(--turquoise));
+    background: linear-gradient(135deg, var(--purple-600), var(--purple-500));
     border-radius: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 8px 32px rgba(0, 119, 190, 0.2);
+    box-shadow: 0 8px 32px rgba(124, 58, 237, 0.2);
 }
 
 .brand h1 {
     font-size: 42px;
     font-weight: 200;
     letter-spacing: -0.5px;
-    background: linear-gradient(135deg, #e8f4f8, var(--turquoise), var(--ocean));
+    background: linear-gradient(135deg, #ede9fe, var(--purple-500), var(--fuchsia));
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -91,7 +94,7 @@ body {
 }
 
 .card:hover {
-    border-color: rgba(64, 224, 208, 0.2);
+    border-color: rgba(168, 85, 247, 0.2);
 }
 
 .card-header {
@@ -158,7 +161,7 @@ body {
 
 .input-wrap input:focus {
     border-color: var(--turquoise);
-    box-shadow: 0 0 0 3px rgba(64, 224, 208, 0.08);
+    box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.08);
 }
 
 .input-wrap input::placeholder {
@@ -174,7 +177,7 @@ body {
 
 .input-wrap input.success {
     border-color: var(--turquoise);
-    box-shadow: 0 0 0 3px rgba(64, 224, 208, 0.08);
+    box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.08);
 }
 
 .btn {
@@ -202,19 +205,33 @@ body {
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, var(--ocean), var(--turquoise));
+    background: linear-gradient(135deg, var(--purple-600), var(--purple-500));
     color: #fff;
-    box-shadow: 0 4px 16px rgba(0, 119, 190, 0.25);
+    box-shadow: 0 4px 16px rgba(124, 58, 237, 0.3);
 }
 
 .btn-primary:hover:not(:disabled) {
-    box-shadow: 0 6px 24px rgba(0, 119, 190, 0.35);
+    box-shadow: 0 6px 24px rgba(124, 58, 237, 0.4);
     transform: translateY(-1px);
 }
 
 .btn-primary:active:not(:disabled) {
     transform: translateY(0);
 }
+
+.btn-discord {
+    background: #5865f2;
+    color: #fff;
+    border: none;
+}
+
+.btn-discord:hover:not(:disabled) {
+    background: #4752c4;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(88, 101, 242, 0.35);
+}
+
+.btn-discord svg { flex-shrink: 0; }
 
 .btn-secondary {
     background: var(--bg-elevated);
@@ -239,12 +256,12 @@ body {
 
 .btn-success {
     background: transparent;
-    border: 1px solid rgba(64, 224, 208, 0.3);
+    border: 1px solid rgba(168, 85, 247, 0.3);
     color: var(--turquoise);
 }
 
 .btn-success:hover:not(:disabled) {
-    background: rgba(64, 224, 208, 0.08);
+    background: rgba(168, 85, 247, 0.08);
 }
 
 .btn-sm {
@@ -277,8 +294,8 @@ body {
 .result-box.visible { display: flex; align-items: flex-start; gap: 10px; }
 
 .result-box.success {
-    background: rgba(64, 224, 208, 0.06);
-    border: 1px solid rgba(64, 224, 208, 0.2);
+    background: rgba(168, 85, 247, 0.06);
+    border: 1px solid rgba(168, 85, 247, 0.2);
     color: var(--turquoise);
 }
 
@@ -295,8 +312,8 @@ body {
 }
 
 .result-box.info {
-    background: rgba(0, 119, 190, 0.06);
-    border: 1px solid rgba(0, 119, 190, 0.2);
+    background: rgba(124, 58, 237, 0.06);
+    border: 1px solid rgba(124, 58, 237, 0.2);
     color: var(--ocean);
 }
 
@@ -347,10 +364,10 @@ body {
     flex-shrink: 0;
 }
 
-.status-available { background: rgba(64, 224, 208, 0.12); color: var(--turquoise); }
+.status-available { background: rgba(168, 85, 247, 0.12); color: var(--turquoise); }
 .status-available .status-dot { background: var(--turquoise); }
-.status-used { background: rgba(0, 119, 190, 0.12); color: var(--ocean); }
-.status-used .status-dot { background: var(--ocean); }
+.status-used { background: rgba(124, 58, 237, 0.12); color: var(--purple-500); }
+.status-used .status-dot { background: var(--purple-600); }
 .status-banned { background: rgba(255, 90, 106, 0.12); color: #ff6a7a; }
 .status-banned .status-dot { background: #ff6a7a; }
 
@@ -392,9 +409,9 @@ body {
     backdrop-filter: blur(8px);
 }
 
-.toast-success { background: rgba(64, 224, 208, 0.12); border: 1px solid rgba(64, 224, 208, 0.25); color: var(--turquoise); }
+.toast-success { background: rgba(168, 85, 247, 0.12); border: 1px solid rgba(168, 85, 247, 0.25); color: var(--turquoise); }
 .toast-error { background: rgba(255, 90, 106, 0.12); border: 1px solid rgba(255, 90, 106, 0.25); color: #ff6a7a; }
-.toast-info { background: rgba(0, 119, 190, 0.12); border: 1px solid rgba(0, 119, 190, 0.25); color: var(--ocean); }
+.toast-info { background: rgba(124, 58, 237, 0.12); border: 1px solid rgba(124, 58, 237, 0.25); color: var(--purple-500); }
 
 @keyframes toastSlide {
     from { opacity: 0; transform: translateX(24px); }
@@ -417,7 +434,7 @@ body {
     transition: border-color var(--transition);
 }
 
-.stat-card:hover { border-color: rgba(64, 224, 208, 0.25); }
+.stat-card:hover { border-color: rgba(168, 85, 247, 0.25); }
 
 .stat-value {
     font-size: 34px;

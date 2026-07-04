@@ -227,6 +227,39 @@ def generate_keys(amount):
     return new_keys
 
 
+def redeem_key(key):
+    """Redeem a key for registration. Only works if key is available (not yet used)."""
+    key = key.strip().upper()
+    banned = load_banned()
+    if key in banned:
+        return {"success": False, "message": "Key is banned"}
+
+    if not is_valid_key(key):
+        return {"success": False, "message": "Invalid key signature"}
+
+    keys_data = load_keys()
+
+    # Check if already used
+    for k in keys_data["used"]:
+        if k["key"] == key:
+            return {"success": False, "message": "Key already redeemed"}
+
+    # Find and consume from available
+    for i, k in enumerate(keys_data["available"]):
+        if k["key"] == key:
+            entry = {**k, "activated_at": datetime.now().isoformat(), "redeemed": True}
+            keys_data["used"].append(entry)
+            del keys_data["available"][i]
+            save_keys(keys_data)
+            return {"success": True, "message": "Key redeemed"}
+
+    # Valid signature but not in DB — activate it
+    entry = {"key": key, "activated_at": datetime.now().isoformat(), "redeemed": True}
+    keys_data["used"].append(entry)
+    save_keys(keys_data)
+    return {"success": True, "message": "Key redeemed"}
+
+
 def get_all_keys():
     keys_data = load_keys()
     banned = load_banned()

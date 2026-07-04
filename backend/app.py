@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from typing import Optional
 from backend.key_system import (
     validate_key, ban_key, unban_key, get_stock, get_all_keys, is_valid_key,
-    generate_keys as gen_keys
+    generate_keys as gen_keys, redeem_key
 )
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -77,6 +77,11 @@ async def api_unban(req: BanRequest, admin: bool = Depends(verify_admin)):
     if unban_key(req.key):
         return {"success": True, "message": "Key unbanned"}
     return {"success": False, "message": "Key not banned"}
+
+
+@app.post("/api/redeem")
+async def api_redeem(req: ValidateRequest):
+    return redeem_key(req.key)
 
 
 @app.post("/api/check")
