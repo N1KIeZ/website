@@ -3,213 +3,960 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>nikita.gg — License Activation</title>
+    <title>nikita.gg</title>
     <link rel="stylesheet" href="css/style.css">
+    <style>
+        :root {
+            --accent: var(--turquoise);
+            --accent-hover: #35c8b8;
+        }
+
+        .view { display: none; }
+        .view.visible { display: block; }
+
+        #view-home {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            min-height: calc(100vh - 120px);
+            text-align: center;
+        }
+        #view-home.visible { display: flex; }
+
+        .home-logo {
+            font-size: clamp(72px, 14vw, 160px);
+            font-weight: 200;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, #e8f4f8, var(--turquoise), var(--ocean));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+            margin-bottom: 16px;
+        }
+
+        .home-tagline {
+            font-size: 14px;
+            color: var(--text-dim);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            font-weight: 300;
+        }
+
+        .home-actions {
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+
+        nav {
+            display: flex;
+            gap: 32px;
+            padding: 28px 0;
+            justify-content: center;
+            flex-wrap: wrap;
+            border-bottom: 1px solid var(--border);
+        }
+        nav a {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 13px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            padding-bottom: 4px;
+            transition: color .2s;
+        }
+        nav a:hover, nav a.active { color: var(--text); }
+
+        #view-pricing { padding: 60px 0 40px; }
+
+        .section-title {
+            text-align: center;
+            font-size: 32px;
+            font-weight: 200;
+            margin-bottom: 48px;
+            color: var(--text);
+            letter-spacing: 0.5px;
+        }
+
+        .plans {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 28px;
+            justify-content: center;
+        }
+
+        .plan {
+            flex: 1;
+            min-width: 260px;
+            max-width: 340px;
+            padding: 40px 32px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--bg-card);
+            text-align: center;
+            position: relative;
+            transition: border-color .2s;
+        }
+        .plan:hover { border-color: rgba(64, 224, 208, 0.25); }
+        .plan.popular {
+            border-color: var(--turquoise);
+            box-shadow: 0 0 0 1px rgba(64, 224, 208, 0.15);
+        }
+        .plan .badge {
+            position: absolute;
+            top: -12px; left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, var(--ocean), var(--turquoise));
+            color: #fff;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            padding: 6px 16px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+        .plan h3 { font-size: 22px; font-weight: 300; color: var(--text); margin-bottom: 20px; }
+        .plan .price { font-size: 40px; font-weight: 200; color: var(--turquoise); margin-bottom: 6px; }
+        .plan .period { font-size: 13px; color: var(--text-dim); margin-bottom: 32px; }
+        .plan ul { list-style: none; margin-bottom: 36px; }
+        .plan li { font-size: 14px; color: var(--text-dim); padding: 8px 0; }
+        .plan li::before { content: "\2713"; color: var(--turquoise); margin-right: 10px; }
+
+        .auth-box {
+            max-width: 460px;
+            margin: 40px auto;
+            padding: 36px 32px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--bg-card);
+        }
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 36px;
+        }
+        .auth-tab {
+            flex: 1;
+            text-align: center;
+            padding-bottom: 14px;
+            font-size: 15px;
+            color: var(--text-dim);
+            border-bottom: 2px solid var(--border);
+            cursor: pointer;
+            transition: color .2s, border-color .2s;
+        }
+        .auth-tab.active { color: var(--text); border-bottom-color: var(--turquoise); }
+
+        .form-error { color: #ff6a7a; font-size: 13px; text-align: center; margin-bottom: 16px; min-height: 16px; }
+
+        .captcha-box {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+        .captcha-q {
+            font-family: "Consolas", monospace;
+            font-size: 15px;
+            color: var(--turquoise);
+            margin-bottom: 14px;
+            letter-spacing: 1px;
+        }
+        .captcha-box input {
+            width: 100%;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 10px 14px;
+            font-size: 14px;
+            color: var(--text);
+            font-family: inherit;
+            outline: none;
+            margin-bottom: 10px;
+        }
+        .captcha-box input:focus { border-color: var(--turquoise); }
+        .captcha-refresh {
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            color: var(--text-dim);
+            font-size: 12px;
+            font-family: inherit;
+            padding: 6px 16px;
+            cursor: pointer;
+            transition: border-color .2s;
+        }
+        .captcha-refresh:hover { border-color: var(--text-dim); }
+
+        .dash-wrap { max-width: 900px; margin: 0 auto; padding: 30px 0; }
+        .dash-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+        .dash-head h1 { font-size: 32px; font-weight: 200; }
+        .dash-head .welcome { color: var(--text-dim); font-size: 14px; }
+        .dash-head .welcome span { color: var(--turquoise); }
+
+        .dash-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .dash-grid.two-col { grid-template-columns: 1fr 1fr; }
+        .dash-card {
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--bg-card);
+            padding: 28px 24px;
+            transition: border-color .2s;
+        }
+        .dash-card:hover { border-color: rgba(64, 224, 208, 0.2); }
+        .dash-card.accent {
+            border-color: rgba(64, 224, 208, 0.25);
+            background: linear-gradient(135deg, rgba(0,119,190,0.06), rgba(64,224,208,0.04));
+        }
+        .dash-card h4 {
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            margin-bottom: 14px;
+        }
+        .dash-card .big { font-size: 28px; font-weight: 300; margin-bottom: 6px; }
+        .dash-card .sub { font-size: 13px; color: var(--text-dim); }
+        .dash-card .ok { color: var(--turquoise); }
+        .dash-card .warn { color: var(--sand); }
+
+        .dash-list { list-style: none; }
+        .dash-list li {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13.5px;
+            color: var(--text-dim);
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+        }
+        .dash-list li:last-child { border-bottom: none; }
+        .dash-list .t { color: var(--text-muted); font-size: 12px; }
+
+        .dash-actions {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            margin-top: 28px;
+        }
+
+        #loader {
+            position: fixed; inset: 0;
+            background: var(--bg);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            opacity: 0;
+            transition: opacity .4s ease;
+        }
+        #loader.on { display: flex; }
+        #loader.shown { opacity: 1; }
+
+        .loader-logo {
+            font-size: 56px;
+            font-weight: 200;
+            background: linear-gradient(135deg, #e8f4f8, var(--turquoise), var(--ocean));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: pulse 1.6s ease-in-out infinite;
+            margin-bottom: 40px;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .45; }
+        }
+        .loader-bar {
+            width: 240px; height: 2px;
+            background: rgba(255,255,255,0.06);
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+        .loader-bar-fill {
+            height: 100%; width: 0%;
+            background: linear-gradient(90deg, var(--ocean), var(--turquoise));
+            box-shadow: 0 0 10px rgba(64,224,208,0.4);
+            transition: width .45s ease;
+        }
+        .loader-status {
+            font-family: "Consolas", monospace;
+            font-size: 12px;
+            letter-spacing: 2px;
+            color: var(--text-dim);
+            min-height: 18px;
+        }
+
+        .ban-view {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - 80px);
+            text-align: center;
+            padding: 40px 20px;
+        }
+        .ban-icon {
+            width: 72px; height: 72px;
+            margin: 0 auto 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            border: 2px solid rgba(255,90,106,0.3);
+            color: #ff6a7a;
+        }
+        .ban-title { font-size: 26px; font-weight: 300; letter-spacing: 4px; color: #ff6a7a; margin-bottom: 8px; text-transform: uppercase; }
+        .ban-subtitle { font-size: 14px; color: var(--text-dim); margin-bottom: 24px; }
+        .ban-key-box {
+            display: inline-flex; flex-direction: column; align-items: center; gap: 4px;
+            padding: 14px 24px;
+            border: 1px solid rgba(255,90,106,0.2);
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+        }
+        .ban-key-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); }
+        .ban-key-value { font-family: "Consolas", monospace; font-size: 13px; letter-spacing: 1px; color: #ff8a9a; }
+        .ban-reason { font-size: 13px; color: var(--text-dim); line-height: 1.7; margin-bottom: 8px; }
+        .ban-contact { font-size: 12px; color: var(--text-muted); margin-bottom: 28px; }
+
+        .status-dot-sm {
+            display: inline-block; width: 6px; height: 6px;
+            border-radius: 50%; background: var(--turquoise);
+            margin-right: 6px;
+        }
+
+        @media (max-width: 768px) {
+            .dash-grid.two-col { grid-template-columns: 1fr; }
+            .dash-head { flex-direction: column; align-items: flex-start; }
+            .home-actions { flex-direction: column; align-items: center; }
+            .plans { flex-direction: column; align-items: center; }
+            .plan { max-width: 100%; }
+        }
+
+        @media (max-width: 480px) {
+            nav { gap: 16px; padding: 20px 0; }
+            nav a { font-size: 11px; }
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <div class="brand">
-            <div class="brand-icon">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                </svg>
-            </div>
-            <h1>nikita.gg</h1>
-            <p>License Activation</p>
-        </div>
 
-        <div id="activate-view">
+<nav id="main-nav">
+    <a data-nav="home" class="active" onclick="showView('home')">home</a>
+    <a data-nav="pricing" onclick="showView('pricing')">pricing</a>
+    <a data-nav="auth" onclick="showView('auth')">license</a>
+    <a data-nav="activate" onclick="showView('activate')">activate</a>
+</nav>
+
+<div class="container" style="display:flex;flex-direction:column;min-height:calc(100vh - 80px);">
+
+    <!-- HOME -->
+    <div id="view-home" class="view visible">
+        <div>
+            <div class="home-logo">nikita.gg</div>
+            <p class="home-tagline">premium software, verified licenses</p>
+            <div class="home-actions">
+                <button class="btn btn-primary" onclick="showView('pricing')">View Plans</button>
+                <button class="btn btn-secondary" onclick="showView('activate')">Activate Key</button>
+                <button class="btn btn-secondary" onclick="location.href='admin.html'">Admin</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PRICING -->
+    <div id="view-pricing" class="view">
+        <h2 class="section-title">choose your plan</h2>
+        <div class="plans">
+            <div class="plan">
+                <h3>1 Month</h3>
+                <div class="price">$7.99</div>
+                <div class="period">per month</div>
+                <ul>
+                    <li>Full access</li>
+                    <li>Premium features</li>
+                    <li>Priority support</li>
+                    <li>Regular updates</li>
+                </ul>
+                <button class="btn btn-primary" onclick="showView('auth')">Purchase</button>
+            </div>
+            <div class="plan popular">
+                <div class="badge">Most Popular</div>
+                <h3>3 Months</h3>
+                <div class="price">$18.99</div>
+                <div class="period">per 3 months</div>
+                <ul>
+                    <li>Full access</li>
+                    <li>Premium features</li>
+                    <li>Priority support</li>
+                    <li>Regular updates</li>
+                    <li>20% savings</li>
+                </ul>
+                <button class="btn btn-primary" onclick="showView('auth')">Purchase</button>
+            </div>
+            <div class="plan">
+                <h3>6 Months</h3>
+                <div class="price">$33.99</div>
+                <div class="period">per 6 months</div>
+                <ul>
+                    <li>Full access</li>
+                    <li>Beta features</li>
+                    <li>Priority support</li>
+                    <li>Beta updates</li>
+                    <li>30% savings</li>
+                </ul>
+                <button class="btn btn-primary" onclick="showView('auth')">Purchase</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AUTH (Register/Login) -->
+    <div id="view-auth" class="view">
+        <div class="auth-box">
+            <div class="auth-tabs">
+                <div class="auth-tab active" id="tab-register" onclick="showAuthTab('register')">register</div>
+                <div class="auth-tab" id="tab-login" onclick="showAuthTab('login')">login</div>
+            </div>
+
+            <form id="form-register" onsubmit="return doRegister(event)">
+                <div class="field">
+                    <div class="field-label"><label>Username</label></div>
+                    <div class="input-wrap"><input type="text" id="reg-user" placeholder="Enter username" autocomplete="off"></div>
+                </div>
+                <div class="field">
+                    <div class="field-label"><label>Email</label></div>
+                    <div class="input-wrap"><input type="text" id="reg-email" placeholder="Enter email" autocomplete="off"></div>
+                </div>
+                <div class="field">
+                    <div class="field-label"><label>Password</label></div>
+                    <div class="input-wrap"><input type="password" id="reg-pass" placeholder="Enter password"></div>
+                </div>
+                <div class="field">
+                    <div class="field-label"><label>License Key</label></div>
+                    <div class="input-wrap"><input type="text" id="reg-key" placeholder="Paste your license key" autocomplete="off"></div>
+                </div>
+                <div class="captcha-box">
+                    <div class="captcha-q" id="captcha-q-register">what is ?</div>
+                    <input type="text" id="captcha-a-register" placeholder="Enter answer" autocomplete="off">
+                    <button type="button" class="captcha-refresh" onclick="newCaptcha('register')">refresh</button>
+                </div>
+                <div class="form-error" id="err-register"></div>
+                <button type="submit" class="btn btn-primary btn-block">Register</button>
+            </form>
+
+            <form id="form-login" style="display:none" onsubmit="return doLogin(event)">
+                <div class="field">
+                    <div class="field-label"><label>Username</label></div>
+                    <div class="input-wrap"><input type="text" id="log-user" placeholder="Enter username" autocomplete="off"></div>
+                </div>
+                <div class="field">
+                    <div class="field-label"><label>Password</label></div>
+                    <div class="input-wrap"><input type="password" id="log-pass" placeholder="Enter password"></div>
+                </div>
+                <div class="captcha-box">
+                    <div class="captcha-q" id="captcha-q-login">what is ?</div>
+                    <input type="text" id="captcha-a-login" placeholder="Enter answer" autocomplete="off">
+                    <button type="button" class="captcha-refresh" onclick="newCaptcha('login')">refresh</button>
+                </div>
+                <div class="form-error" id="err-login"></div>
+                <button type="submit" class="btn btn-primary btn-block">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ACTIVATE -->
+    <div id="view-activate" class="view">
+        <div style="max-width:600px;margin:40px auto;">
             <div class="card">
                 <div class="card-header">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--turquoise)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                    </svg>
-                    <span class="card-title">Activate Your License</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--turquoise)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    <span class="card-title">Activate License</span>
                 </div>
-
-                <div id="result" class="result-box"></div>
-
+                <div id="activate-result" class="result-box"></div>
                 <div class="field">
                     <div class="field-label">
                         <label>License Key</label>
-                        <span class="field-hint">Paste your key from Keygen</span>
+                        <span class="field-hint">Generated by nikita Keygen</span>
                     </div>
                     <div class="input-wrap">
-                        <input type="text" id="key-input" placeholder="XXXXX-XXXXX-XXXXX-XXXXX-XXXXX-..." autocomplete="off" spellcheck="false">
+                        <input type="text" id="activate-key" placeholder="XXXXX-XXXXX-XXXXX-..." autocomplete="off" spellcheck="false">
                     </div>
                 </div>
-
                 <button class="btn btn-primary btn-block" id="activate-btn" onclick="doActivate()">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="20 6 9 17 4 12"/>
-                    </svg>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
                     Activate
                 </button>
-
-                <div class="hwid-display">
-                    <span>HWID</span> <span id="hwid-value"></span>
-                </div>
-            </div>
-
-            <div class="card" style="padding:20px 32px;">
-                <div style="display:flex;justify-content:space-between;align-items:center;font-size:12.5px;">
-                    <span style="color:var(--text-dim);">Have a saved license?</span>
-                    <button class="btn btn-secondary btn-sm" onclick="checkSavedLicense()">Check Status</button>
-                </div>
+                <div class="hwid-display"><span>HWID</span> <span id="activate-hwid"></span></div>
             </div>
         </div>
-
-        <div id="status-view" class="hidden">
-            <div class="card">
-                <div class="card-header">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--turquoise)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
-                    </svg>
-                    <span class="card-title">License Status</span>
-                </div>
-                <div id="license-details"></div>
-                <div style="margin-top:20px;">
-                    <button class="btn btn-secondary btn-block" onclick="showActivateView()">Activate Another Key</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="footer">nikita.gg &middot; asymmetric license system</div>
     </div>
 
-    <div class="toast-container" id="toast-container"></div>
+    <!-- DASHBOARD -->
+    <div id="view-dashboard" class="view" style="flex:1;">
+        <div class="dash-wrap">
+            <div class="dash-head">
+                <div>
+                    <h1>dashboard</h1>
+                    <div class="welcome">welcome back, <span id="dash-user">user</span></div>
+                </div>
+                <button class="btn btn-secondary btn-sm" onclick="doLogout()" style="padding:10px 24px;">Logout</button>
+            </div>
 
-    <script src="js/hwid.js"></script>
-    <script src="js/key-system.js"></script>
-    <script>
-        var LS_KEY = 'license_key';
-        var LS_STATUS = 'license_status';
+            <div class="dash-grid">
+                <div class="dash-card accent">
+                    <h4>license</h4>
+                    <div class="big" id="dash-license-plan">lifetime</div>
+                    <div class="sub"><span class="status-dot-sm"></span><span class="ok" id="dash-license-status">active</span> &middot; <span id="dash-license-remaining">lifetime</span></div>
+                </div>
+                <div class="dash-card">
+                    <h4>status</h4>
+                    <div class="big ok">undetected</div>
+                    <div class="sub" id="dash-checked">last checked just now</div>
+                </div>
+                <div class="dash-card">
+                    <h4>version</h4>
+                    <div class="big">v2.4.1</div>
+                    <div class="sub">latest build</div>
+                </div>
+            </div>
 
-        document.addEventListener('DOMContentLoaded', function () {
-            document.getElementById('hwid-value').textContent = HWID.get();
-            document.getElementById('key-input').addEventListener('keydown', function (e) {
-                if (e.key === 'Enter') doActivate();
-            });
-            var saved = localStorage.getItem(LS_KEY);
-            if (saved) checkSavedLicense();
+            <div class="dash-grid two-col">
+                <div class="dash-card">
+                    <h4>license details</h4>
+                    <div id="dash-license-details">
+                        <div class="info-row"><span class="info-label">Key</span><span class="info-value" id="dash-key-display" style="font-size:10px;">-</span></div>
+                        <div class="info-row"><span class="info-label">Activated</span><span class="info-value" id="dash-activated-date">-</span></div>
+                        <div class="info-row"><span class="info-label">HWID</span><span class="info-value" id="dash-hwid-display" style="font-size:10px;">-</span></div>
+                    </div>
+                </div>
+                <div class="dash-card">
+                    <h4>quick actions</h4>
+                    <div style="display:flex;flex-direction:column;gap:10px;">
+                        <button class="btn btn-primary btn-block" onclick="doDownload()" id="btn-download">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            Download
+                        </button>
+                        <button class="btn btn-secondary btn-block" onclick="showView('activate')">Activate Another Key</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dash-card">
+                <h4>recent activity</h4>
+                <ul class="dash-list" id="dash-activity">
+                    <li><span>signed in</span><span class="t">just now</span></li>
+                    <li><span>license validated</span><span class="t" id="dash-activity-time">-</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- BANNED -->
+    <div id="view-banned" class="view" style="flex:1;">
+        <div class="ban-view">
+            <div>
+                <div class="ban-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+                </div>
+                <h1 class="ban-title" id="ban-title">access revoked</h1>
+                <p class="ban-subtitle" id="ban-subtitle">your license has been terminated</p>
+                <div class="ban-key-box">
+                    <span class="ban-key-label">license key</span>
+                    <span class="ban-key-value" id="ban-key-display">XXXXX-****-****</span>
+                </div>
+                <p class="ban-reason">this key has been banned by the administrator.<br>all associated access has been revoked.</p>
+                <p class="ban-contact">if you believe this is an error, contact support.</p>
+                <button class="btn btn-secondary" onclick="doBanLogout()">return to home</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- LOADER OVERLAY -->
+<div id="loader">
+    <div class="loader-logo">nikita.gg</div>
+    <div class="loader-bar"><div class="loader-bar-fill" id="loader-fill"></div></div>
+    <div class="loader-status" id="loader-status"></div>
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+
+<script src="js/hwid.js"></script>
+<script src="js/key-system.js"></script>
+<script>
+    /* ===== KEY VALIDATION (Client-side RSA) ===== */
+    var PUBLIC_N = "59596791868544965917715049293139712060670803368525004046780554740535049298561";
+    var PUBLIC_E = 65537n;
+    var _CH = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    var DURATION_SECONDS = { 'L': null, 'W': 7*24*60*60, 'M': 30*24*60*60 };
+
+    function b32Decode(s) {
+        var bits = "";
+        for (var i = 0; i < s.length; i++) {
+            var val = _CH.indexOf(s[i]);
+            if (val === -1) return null;
+            bits += val.toString(2).padStart(5, '0');
+        }
+        var bytes = [];
+        for (var i = 0; i < bits.length; i += 8) {
+            if (i + 8 <= bits.length) bytes.push(parseInt(bits.slice(i, i + 8), 2));
+        }
+        return bytes;
+    }
+    function bytesToBigInt(bytes) {
+        var hex = [];
+        bytes.forEach(function(b) { hex.push(b.toString(16).padStart(2, '0')); });
+        return BigInt("0x" + hex.join(""));
+    }
+    function _h(s) {
+        var h = 0n;
+        for (var i = 0; i < s.length; i++) h = ((h * 31n) + BigInt(s.charCodeAt(i))) & 0xFFFFFFFFFFFFFFFFn;
+        return h;
+    }
+    function powerMod(base, exp, mod) {
+        var r = 1n; base = base % mod;
+        while (exp > 0n) { if (exp % 2n === 1n) r = (r * base) % mod; base = (base * base) % mod; exp = exp / 2n; }
+        return r;
+    }
+    function isValidKey(key) {
+        if (!key) return false;
+        var c = key.trim().toUpperCase().replace(/-/g, '');
+        if (c.length < 15) return false;
+        var p = c.slice(0, 10), sig = c.slice(10);
+        var b = b32Decode(sig); if (!b) return false;
+        var s = bytesToBigInt(b), n = BigInt(PUBLIC_N);
+        return powerMod(s, PUBLIC_E, n) === _h(p);
+    }
+    function getKeyDuration(key) {
+        if (!key) return null;
+        var c = key.trim().toUpperCase().replace(/-/g, '');
+        if (c.length < 10) return null;
+        return DURATION_SECONDS[c.charAt(9)] !== undefined ? DURATION_SECONDS[c.charAt(9)] : null;
+    }
+
+    /* ===== STORAGE ===== */
+    var LS_ACCOUNTS = 'ng_accounts';
+    var LS_SESSION = 'ng_session';
+    var LS_KEY = 'license_key';
+    var LS_STATUS = 'license_status';
+    var CURRENT_USER = null;
+
+    function getAccounts() { try { return JSON.parse(localStorage.getItem(LS_ACCOUNTS) || '{}'); } catch(e) { return {}; } }
+    function saveAccount(u, e, p, k) { var a = getAccounts(); a[u.toLowerCase()] = {username:u, email:e, password:p, key:k, joined:Date.now()}; localStorage.setItem(LS_ACCOUNTS, JSON.stringify(a)); }
+    function findAccount(u, p) { var a = getAccounts(); var e = a[u.toLowerCase()]; return (e && e.password === p) ? e : null; }
+    function setSession(u) { CURRENT_USER = u; localStorage.setItem(LS_SESSION, u); }
+    function clearSession() { CURRENT_USER = null; localStorage.removeItem(LS_SESSION); }
+
+    /* ===== CAPTCHA ===== */
+    var captchas = {};
+    function newCaptcha(w) { var a = Math.floor(Math.random()*8)+2, b = Math.floor(Math.random()*8)+2; captchas[w] = a*b; document.getElementById('captcha-q-'+w).textContent = 'what is '+a+' \u00d7 '+b+'?'; document.getElementById('captcha-a-'+w).value = ''; }
+    function checkCaptcha(w) { var v = document.getElementById('captcha-a-'+w).value.trim(); return v !== '' && parseInt(v,10) === captchas[w]; }
+
+    /* ===== VIEWS ===== */
+    var currentView = 'home';
+
+    function showView(name) {
+        currentView = name;
+        document.querySelectorAll('.view').forEach(function(v) { v.classList.remove('visible'); });
+        var el = document.getElementById('view-'+name);
+        if (el) el.classList.add('visible');
+        document.querySelectorAll('#main-nav a').forEach(function(a) {
+            a.classList.toggle('active', a.dataset.nav === name);
         });
+        window.scrollTo(0, 0);
+        if (name === 'dashboard') loadDashboard();
+        if (name === 'activate') document.getElementById('activate-hwid').textContent = HWID.get();
+    }
 
-        function showToast(msg, type) {
-            var c = document.getElementById('toast-container');
-            var t = document.createElement('div');
-            t.className = 'toast toast-' + type;
-            t.textContent = msg;
-            c.appendChild(t);
-            setTimeout(function () { t.remove(); }, 3500);
+    function showAuthTab(t) {
+        document.getElementById('tab-register').classList.toggle('active', t==='register');
+        document.getElementById('tab-login').classList.toggle('active', t==='login');
+        document.getElementById('form-register').style.display = t==='register' ? '' : 'none';
+        document.getElementById('form-login').style.display = t==='login' ? '' : 'none';
+        document.getElementById('err-register').textContent = '';
+        document.getElementById('err-login').textContent = '';
+    }
+
+    function showToast(msg, type) {
+        var c = document.getElementById('toast-container');
+        var t = document.createElement('div');
+        t.className = 'toast toast-'+type;
+        t.textContent = msg;
+        c.appendChild(t);
+        setTimeout(function() { t.remove(); }, 3500);
+    }
+
+    function setActivateResult(msg, type) {
+        var el = document.getElementById('activate-result');
+        el.className = 'result-box visible ' + type;
+        el.innerHTML = msg;
+    }
+
+    function clearActivateResult() { document.getElementById('activate-result').className = 'result-box'; }
+
+    function showLoader(steps, finalView, finalCb) {
+        var loader = document.getElementById('loader');
+        var fill = document.getElementById('loader-fill');
+        var status = document.getElementById('loader-status');
+        fill.style.width = '0%';
+        loader.classList.add('on');
+        requestAnimationFrame(function() { loader.classList.add('shown'); });
+        steps.forEach(function(s) { setTimeout(function() { fill.style.width = s[1]; status.innerHTML = s[2]; }, s[0]); });
+        setTimeout(function() {
+            if (finalView) showView(finalView);
+            if (finalCb) finalCb();
+            loader.classList.remove('shown');
+            setTimeout(function() { loader.classList.remove('on'); }, 400);
+        }, steps[steps.length-1][0] + 400);
+    }
+
+    /* ===== AUTH ===== */
+    function doRegister(e) {
+        e.preventDefault();
+        var err = document.getElementById('err-register');
+        var user = document.getElementById('reg-user').value.trim();
+        var email = document.getElementById('reg-email').value.trim();
+        var pass = document.getElementById('reg-pass').value;
+        var key = document.getElementById('reg-key').value.trim();
+        err.textContent = '';
+        if (!user || !email || !pass || !key) { err.textContent = 'fill all fields'; return false; }
+        if (!isValidKey(key)) { err.textContent = 'invalid license key'; return false; }
+        if (!checkCaptcha('register')) { err.textContent = 'incorrect captcha'; newCaptcha('register'); return false; }
+        var accounts = getAccounts();
+        if (accounts[user.toLowerCase()]) { err.textContent = 'username taken'; return false; }
+        saveAccount(user, email, pass, key);
+        setSession(user);
+        enterDashboard(user, key);
+        return false;
+    }
+
+    function doLogin(e) {
+        e.preventDefault();
+        var err = document.getElementById('err-login');
+        var user = document.getElementById('log-user').value.trim();
+        var pass = document.getElementById('log-pass').value;
+        err.textContent = '';
+        if (!user || !pass) { err.textContent = 'fill all fields'; return false; }
+        if (!checkCaptcha('login')) { err.textContent = 'incorrect captcha'; newCaptcha('login'); return false; }
+        var account = findAccount(user, pass);
+        if (!account) { err.textContent = 'invalid credentials'; newCaptcha('login'); return false; }
+        setSession(user);
+        enterDashboard(user, account.key);
+        return false;
+    }
+
+    function enterDashboard(user, key) {
+        document.getElementById('dash-user').textContent = user;
+        showLoader([
+            [300, '30%', 'authenticating...'],
+            [900, '65%', 'loading dashboard...'],
+            [1500, '100%', '<span style="color:var(--turquoise)">access granted</span>']
+        ], 'dashboard', function() {
+            document.getElementById('main-nav').style.display = 'none';
+        });
+        localStorage.setItem(LS_KEY, key);
+    }
+
+    function doLogout() {
+        if (banCheckInterval) clearInterval(banCheckInterval);
+        showLoader([
+            [250, '45%', 'signing out...'],
+            [800, '100%', '<span style="color:var(--turquoise)">session closed</span>']
+        ], 'home', function() {
+            clearSession();
+            document.getElementById('main-nav').style.display = '';
+            document.getElementById('form-login').reset();
+            document.getElementById('form-register').reset();
+            newCaptcha('register'); newCaptcha('login');
+        });
+    }
+
+    function doBanLogout() {
+        if (banCheckInterval) clearInterval(banCheckInterval);
+        showLoader([
+            [300, '50%', 'revoking access...'],
+            [800, '100%', '<span style="color:#ff6a7a">access denied</span>']
+        ], 'home', function() {
+            clearSession();
+            document.getElementById('main-nav').style.display = '';
+        });
+    }
+
+    /* ===== ACTIVATE ===== */
+    async function doActivate() {
+        var input = document.getElementById('activate-key');
+        var key = input.value.trim().toUpperCase();
+        if (!key) { setActivateResult('Please enter a license key', 'error'); input.focus(); return; }
+        var btn = document.getElementById('activate-btn');
+        btn.disabled = true; btn.innerHTML = '<div style="width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto;"></div> Validating...';
+        clearActivateResult();
+        try {
+            var r = await KeySystem.validateKey(key, HWID.get());
+            if (r.valid) {
+                localStorage.setItem(LS_KEY, key);
+                localStorage.setItem(LS_STATUS, JSON.stringify(r));
+                setActivateResult('<svg class="result-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M16 8l-6 6-4-4"/></svg><span class="result-text">' + (r.message || 'Activated') + '</span>', 'success');
+                showToast('License activated', 'success');
+                input.value = '';
+                setTimeout(function() { showView('dashboard'); }, 1200);
+            } else {
+                setActivateResult('<svg class="result-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg><span class="result-text">' + (r.message || 'Failed') + '</span>', 'error');
+                showToast(r.message || 'Failed', 'error');
+            }
+        } catch(e) {
+            setActivateResult('<svg class="result-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg><span class="result-text">Server unreachable</span>', 'error');
         }
+        btn.disabled = false; btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Activate';
+    }
 
-        function setResult(msg, type, icon) {
-            var el = document.getElementById('result');
-            el.className = 'result-box visible ' + type;
-            var icons = {
-                success: '<svg class="result-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M16 8l-6 6-4-4"/></svg>',
-                error: '<svg class="result-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',
-                warning: '<svg class="result-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',
-            };
-            el.innerHTML = (icons[type] || '') + '<span class="result-text">' + msg + '</span>';
+    /* ===== DASHBOARD ===== */
+    function loadDashboard() {
+        var key = localStorage.getItem(LS_KEY);
+        var status = localStorage.getItem(LS_STATUS);
+        var data = null;
+        try { data = JSON.parse(status); } catch(e) {}
+
+        if (key) {
+            document.getElementById('dash-key-display').textContent = key;
+            var dur = getKeyDuration(key);
+            var planText = 'lifetime';
+            if (dur !== null) {
+                planText = dur === 7*24*60*60 ? '1 week' : dur === 30*24*60*60 ? '1 month' : 'custom';
+            }
+            document.getElementById('dash-license-plan').textContent = planText;
+
+            if (data && data.valid && data.key && data.key.activated_at) {
+                var activated = new Date(data.key.activated_at).getTime();
+                document.getElementById('dash-activated-date').textContent = new Date(data.key.activated_at).toLocaleDateString();
+                document.getElementById('dash-hwid-display').textContent = HWID.get();
+                document.getElementById('dash-activity-time').textContent = new Date(data.key.activated_at).toLocaleString();
+
+                if (dur !== null) {
+                    var expiresAt = activated + (dur * 1000);
+                    var now = Date.now();
+                    var remaining = expiresAt - now;
+                    if (remaining > 0) {
+                        var days = Math.floor(remaining / (24*60*60*1000));
+                        var hours = Math.floor((remaining % (24*60*60*1000)) / (60*60*1000));
+                        var text = '';
+                        if (days > 0) text = days + ' day' + (days > 1 ? 's' : '') + ' remaining';
+                        else if (hours > 0) text = hours + ' hour' + (hours > 1 ? 's' : '') + ' remaining';
+                        else text = 'expiring soon';
+                        document.getElementById('dash-license-remaining').textContent = text;
+                        document.getElementById('dash-license-remaining').className = days < 3 ? 'warn' : 'ok';
+                    } else {
+                        document.getElementById('dash-license-remaining').textContent = 'expired';
+                        document.getElementById('dash-license-remaining').className = 'warn';
+                    }
+                } else {
+                    document.getElementById('dash-license-remaining').textContent = 'lifetime';
+                    document.getElementById('dash-license-remaining').className = 'ok';
+                }
+            } else {
+                document.getElementById('dash-activated-date').textContent = '-';
+                document.getElementById('dash-hwid-display').textContent = HWID.get();
+                document.getElementById('dash-license-remaining').textContent = 'active';
+            }
+        } else {
+            document.getElementById('dash-key-display').textContent = 'No license';
+            document.getElementById('dash-license-plan').textContent = '-';
+            document.getElementById('dash-license-remaining').textContent = 'inactive';
+            document.getElementById('dash-license-remaining').className = 'warn';
+            document.getElementById('dash-activated-date').textContent = '-';
+            document.getElementById('dash-hwid-display').textContent = '-';
         }
+    }
 
-        function clearResult() {
-            document.getElementById('result').className = 'result-box';
-        }
+    /* ===== DOWNLOAD LOADER ===== */
+    function doDownload() {
+        showLoader([
+            [400, '20%', 'preparing download...'],
+            [1000, '55%', 'encrypting payload...'],
+            [1800, '85%', 'verifying license...'],
+            [2400, '100%', '<span style="color:var(--turquoise)">download ready</span>']
+        ], null, function() {
+            showToast('Download started', 'success');
+        });
+    }
 
-        function showActivateView() {
-            document.getElementById('activate-view').classList.remove('hidden');
-            document.getElementById('status-view').classList.add('hidden');
-            clearResult();
-        }
+    /* ===== BAN CHECKING ===== */
+    var banCheckInterval = null;
 
-        async function doActivate() {
-            var input = document.getElementById('key-input');
-            var key = input.value.trim().toUpperCase();
-            if (!key) {
-                setResult('Please enter a license key', 'error');
-                input.focus();
+    function startBanPolling() {
+        if (banCheckInterval) clearInterval(banCheckInterval);
+        banCheckInterval = setInterval(function() {
+            if (!CURRENT_USER) return;
+            var accounts = getAccounts();
+            var acc = accounts[CURRENT_USER.toLowerCase()];
+            if (acc && acc.key) {
+                var key = acc.key.trim().toUpperCase().replace(/-/g, '');
+                // check via server validation
+                KeySystem.validateKey(acc.key, HWID.get()).then(function(r) {
+                    if (!r.valid && r.message === 'Key is banned') {
+                        showBanScreen(acc.key);
+                    }
+                }).catch(function() {});
+            }
+        }, 30000);
+    }
+
+    function showBanScreen(key) {
+        var display = key.substring(0, 7) + '-****-****-****';
+        document.getElementById('ban-key-display').textContent = display;
+        document.getElementById('main-nav').style.display = 'none';
+        showView('banned');
+        if (banCheckInterval) clearInterval(banCheckInterval);
+    }
+
+    /* ===== INIT ===== */
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('activate-hwid').textContent = HWID.get();
+        document.getElementById('activate-key').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') doActivate();
+        });
+        newCaptcha('register');
+        newCaptcha('login');
+
+        var session = localStorage.getItem(LS_SESSION);
+        if (session) {
+            var accounts = getAccounts();
+            var acc = accounts[session.toLowerCase()];
+            if (acc) {
+                CURRENT_USER = session;
+                document.getElementById('dash-user').textContent = session;
+                document.getElementById('main-nav').style.display = 'none';
+                showView('dashboard');
+                startBanPolling();
                 return;
             }
-
-            var btn = document.getElementById('activate-btn');
-            btn.disabled = true;
-            btn.innerHTML = '<div class="loading-spinner" style="width:16px;height:16px;margin:0;"></div> Validating...';
-            clearResult();
-
-            try {
-                var result = await KeySystem.validateKey(key, HWID.get());
-
-                if (result.valid) {
-                    localStorage.setItem(LS_KEY, key);
-                    localStorage.setItem(LS_STATUS, JSON.stringify(result));
-                    setResult(result.message || 'License activated successfully', 'success');
-                    showToast('License activated', 'success');
-                    input.value = '';
-                    setTimeout(showLicenseStatus, 800);
-                } else {
-                    setResult(result.message || 'Activation failed', 'error');
-                    showToast(result.message || 'Activation failed', 'error');
-                    input.classList.add('error');
-                    setTimeout(function () { input.classList.remove('error'); }, 2000);
-                }
-            } catch (e) {
-                setResult('Server unreachable. Is the backend running?', 'error');
-                showToast('Connection failed', 'error');
-            }
-
-            btn.disabled = false;
-            btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Activate';
+            clearSession();
         }
 
-        function showLicenseStatus() {
-            document.getElementById('activate-view').classList.add('hidden');
-            document.getElementById('status-view').classList.remove('hidden');
-
-            var key = localStorage.getItem(LS_KEY) || 'Unknown';
-            var status = localStorage.getItem(LS_STATUS);
-            var data = null;
-            try { data = JSON.parse(status); } catch (_) {}
-
-            var statusText = data && data.valid ? 'Active' : 'Unknown';
-            var statusColor = data && data.valid ? 'var(--turquoise)' : 'var(--text-dim)';
-
-            var html = [
-                '<div class="result-box visible info" style="margin-bottom:20px;">',
-                '<svg class="result-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>',
-                '<span class="result-text">Your license is <strong style="color:' + statusColor + '">' + statusText + '</strong></span>',
-                '</div>',
-                '<div class="info-row"><span class="info-label">License Key</span><span class="info-value" style="font-size:11px;">' + key + '</span></div>',
-                '<div class="info-row"><span class="info-label">Status</span><span class="info-value" style="color:' + statusColor + ';">' + statusText + '</span></div>',
-                '<div class="info-row"><span class="info-label">HWID</span><span class="info-value">' + HWID.get() + '</span></div>',
-            ];
-            document.getElementById('license-details').innerHTML = html.join('');
+        var savedKey = localStorage.getItem(LS_KEY);
+        if (savedKey) {
+            showView('dashboard');
         }
-
-        async function checkSavedLicense() {
-            var saved = localStorage.getItem(LS_KEY);
-            if (!saved) {
-                showToast('No saved license found', 'info');
-                return;
-            }
-            try {
-                var result = await KeySystem.validateKey(saved, HWID.get());
-                if (result.valid) {
-                    localStorage.setItem(LS_STATUS, JSON.stringify(result));
-                    showLicenseStatus();
-                    showToast('License is valid', 'success');
-                } else {
-                    localStorage.removeItem(LS_KEY);
-                    localStorage.removeItem(LS_STATUS);
-                    showToast('License no longer valid', 'error');
-                    showActivateView();
-                }
-            } catch (e) {
-                showToast('Server unreachable', 'error');
-            }
-        }
-    </script>
+    });
+</script>
 </body>
 </html>
