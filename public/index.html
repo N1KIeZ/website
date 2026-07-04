@@ -29,20 +29,16 @@
         #view-home.visible { display: flex; }
         .product-side {
             position: fixed;
-            left: -80px;
+            left: -120px;
             top: 50%;
             transform: translateY(-50%);
-            width: 48vw;
-            max-width: 900px;
+            width: 40vw;
+            max-width: 650px;
             text-align: center;
             pointer-events: none;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0;
         }
         .product-side img { width: 100%; height: auto; display: block; }
-        .product-label { font-size: 13px; letter-spacing: 4px; text-transform: uppercase; color: var(--text-dim); font-weight: 300; }
+        .product-label { font-size: 13px; letter-spacing: 4px; text-transform: uppercase; color: var(--text-dim); font-weight: 300; line-height: 1; margin-bottom: 2px; }
 
         .home-logo {
             font-size: clamp(72px, 14vw, 160px);
