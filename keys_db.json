@@ -1,5 +1,11 @@
 {
-  "active": [],
+  "active": [
+    {
+      "key": "CCUN4-UXB5L-KWKX3-SFS5E-Z9ZXT-UUQ9F-TK527-2AWTA-GKFMY-64UWP-J6YVM-QXTX6-MS",
+      "duration": "lifetime",
+      "created": 1783177665
+    }
+  ],
   "banned": [
     "HE862-Y3MXH-DG2BY-XQWB9-VKNBS-9HBKU-GRMSZ-VJJUZ-QV7GZ-R88TZ-GGSEE-H5DCB-FA",
     "58H3D-R7A5J-CVN95-HX29L-MQUTQ-NVGLE-X62V3-XWGPY-EBWCK-7LV69-QMJTM-5K2DZ-RS",

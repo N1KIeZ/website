@@ -63,10 +63,10 @@ def _migrate_keys(data):
         return data
     if "keys" in data:
         return {"available": [{"key": k} for k in data["keys"]], "used": []}
-    if "active" in data or "active" in data:
+    if "active" in data:
         return {
             "available": [],
-            "used": [k if isinstance(k, dict) else {"key": k} for k in data.get("active", [])]
+            "used": [k if isinstance(k, dict) else {"key": k} for k in data["active"]]
         }
     return {"available": [], "used": []}
 
@@ -124,6 +124,9 @@ def validate_key(key, hwid=None):
     if key in banned:
         return {"valid": False, "message": "Key is banned"}
 
+    if not is_valid_key(key):
+        return {"valid": False, "message": "Invalid key signature"}
+
     keys_data = load_keys()
 
     for i, k in enumerate(keys_data["available"]):
@@ -141,7 +144,11 @@ def validate_key(key, hwid=None):
                 return {"valid": False, "message": "Key locked to another device"}
             return {"valid": True, "message": "Key already active", "key": k}
 
-    return {"valid": False, "message": "Key not found"}
+    # Key has valid signature but isn't in DB — activate on the fly
+    entry = {"key": key, "hwid": hwid, "activated_at": datetime.now().isoformat()}
+    keys_data["used"].append(entry)
+    save_keys(keys_data)
+    return {"valid": True, "message": "Key activated", "key": entry}
 
 
 def ban_key(key):
@@ -197,6 +204,8 @@ def generate_keys(amount):
         existing.add(k["key"])
     for k in keys_data["used"]:
         existing.add(k["key"])
+    for k in load_banned():
+        existing.add(k)
 
     while len(new_keys) < amount:
         prefix = "".join(secrets.choice(prefix_chars) for _ in range(9))

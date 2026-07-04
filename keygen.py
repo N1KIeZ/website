@@ -159,23 +159,31 @@ class App(tk.Tk):
         tk.Frame(self, bg=ACCENT, height=1).pack(fill='x', padx=36)
 
         cfg = load_config()
-        token_frame = tk.Frame(self, bg=BG)
-        token_frame.pack(fill='x', padx=36, pady=10)
-        tk.Label(token_frame, text='github token', font=FONT_SUB, bg=BG, fg=FG_DIM).pack(side='left')
+        self._cloud_visible = False
+        cloud_frame = tk.Frame(self, bg=BG)
+        cloud_frame.pack(fill='x', padx=36, pady=6)
+        self.cloud_btn = tk.Button(cloud_frame, text='+ CLOUD SYNC', font=FONT_SUB,
+                                    bg=BG3, fg=FG_DIM, activebackground='#2a1822',
+                                    activeforeground='#fff', relief='flat',
+                                    padx=12, cursor='hand2', command=self._toggle_cloud)
+        self.cloud_btn.pack(side='left')
+
+        gist_status = 'live' if cfg.get('gist_id') else 'local only'
+        gist_color = '#e878b4' if cfg.get('gist_id') else FG_DIM
+        self.gist_label = tk.Label(cloud_frame, text=gist_status, font=FONT_SUB,
+                                    bg=BG, fg=gist_color)
+        self.gist_label.pack(side='right')
+
+        self.token_frame = tk.Frame(self, bg=BG)
+        tk.Label(self.token_frame, text='github token', font=FONT_SUB, bg=BG, fg=FG_DIM).pack(side='left')
         self.token_var = tk.StringVar(value=cfg.get('github_token', ''))
-        self.token_entry = tk.Entry(token_frame, textvariable=self.token_var, font=FONT_MONO,
+        self.token_entry = tk.Entry(self.token_frame, textvariable=self.token_var, font=FONT_MONO,
                                      bg=BG3, fg=FG, insertbackground=FG, relief='flat',
                                      highlightthickness=1, highlightbackground=ACCENT, width=40)
         self.token_entry.pack(side='left', padx=10)
-        tk.Button(token_frame, text='SAVE', font=FONT_SUB, bg=BG3, fg=FG_DIM,
+        tk.Button(self.token_frame, text='SAVE', font=FONT_SUB, bg=BG3, fg=FG_DIM,
                   activebackground='#2a1822', activeforeground='#fff', relief='flat',
                   padx=10, cursor='hand2', command=self._save_token).pack(side='left', padx=10)
-
-        gist_status = 'connected' if cfg.get('gist_id') else 'not connected'
-        gist_color = '#e878b4' if cfg.get('gist_id') else FG_DIM
-        self.gist_label = tk.Label(token_frame, text=gist_status, font=FONT_SUB,
-                                    bg=BG, fg=gist_color)
-        self.gist_label.pack(side='right')
 
         controls = tk.Frame(self, bg=BG)
         controls.pack(fill='x', padx=36, pady=10)
@@ -243,6 +251,15 @@ class App(tk.Tk):
 
         self.status = tk.Label(self, text='', font=FONT_SUB, bg=BG, fg=FG_DIM, anchor='w')
         self.status.pack(fill='x', padx=36, pady=14)
+
+    def _toggle_cloud(self):
+        self._cloud_visible = not self._cloud_visible
+        if self._cloud_visible:
+            self.token_frame.pack(fill='x', padx=36, pady=4)
+            self.cloud_btn.config(text='- CLOUD SYNC')
+        else:
+            self.token_frame.pack_forget()
+            self.cloud_btn.config(text='+ CLOUD SYNC')
 
     def _save_token(self):
         token = self.token_var.get().strip()
