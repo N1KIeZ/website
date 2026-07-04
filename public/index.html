@@ -28,7 +28,7 @@
         }
         #view-home.visible { display: flex; }
         .product-side {
-            position: absolute;
+            position: fixed;
             left: 0;
             top: 50%;
             transform: translateY(-50%);
@@ -394,7 +394,7 @@
     <a data-nav="login" onclick="showView('auth');showAuthTab('login')">login</a>
 </nav>
 
-<div class="container" style="flex:1;display:flex;flex-direction:column;min-height:0;">
+<div class="container" style="flex:1;display:flex;flex-direction:column;min-height:0;max-width:100%;padding:0;">
 
     <!-- HOME -->
     <div id="view-home" class="view visible">
@@ -681,6 +681,7 @@
         var c = document.querySelector('.container');
         if (name === 'dashboard') { loadDashboard(); document.getElementById('main-nav').style.display = 'none'; c.style.maxWidth = '100%'; c.style.padding = '0'; }
         else if (name === 'banned') { document.getElementById('main-nav').style.display = 'none'; c.style.maxWidth = ''; c.style.padding = ''; }
+        else if (name === 'home') { document.getElementById('main-nav').style.display = ''; c.style.maxWidth = '100%'; c.style.padding = '0'; }
         else { document.getElementById('main-nav').style.display = ''; c.style.maxWidth = ''; c.style.padding = ''; }
     }
 
