@@ -17,6 +17,7 @@
 
         #view-home {
             display: flex;
+            position: relative;
             align-items: center;
             justify-content: center;
             flex: 1;
@@ -24,6 +25,15 @@
             text-align: center;
         }
         #view-home.visible { display: flex; }
+        #view-home::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url('product-box.png') center/contain no-repeat;
+            opacity: 0.1;
+            pointer-events: none;
+            z-index: -1;
+        }
 
         .home-logo {
             font-size: clamp(72px, 14vw, 160px);
