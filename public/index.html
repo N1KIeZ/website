@@ -38,15 +38,17 @@
         }
 
         .gg-badge {
-            font-size: clamp(24px, 4vw, 56px);
-            font-weight: 600;
+            font-size: 0.35em;
+            font-weight: 700;
             background: linear-gradient(135deg, var(--accent, #a855f7), #d946ef);
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
-            vertical-align: super;
-            line-height: 1;
-            letter-spacing: 1px;
+            vertical-align: top;
+            line-height: 1.1;
+            letter-spacing: 0.5px;
+            display: inline-block;
+            margin-top: 0.1em;
         }
 
         .home-tagline {
@@ -533,7 +535,7 @@
     </div>
 
     <!-- DASHBOARD -->
-    <div id="view-dashboard" class="view" style="flex:1;">
+    <div id="view-dashboard" class="view" style="flex:1;padding:40px 24px;">
         <div class="dash-wrap">
             <div class="dash-head">
                 <div>
@@ -704,9 +706,10 @@
             a.classList.toggle('active', a.dataset.nav === name);
         });
         window.scrollTo(0, 0);
-        if (name === 'dashboard') { loadDashboard(); document.getElementById('main-nav').style.display = 'none'; }
-        else if (name === 'banned') { document.getElementById('main-nav').style.display = 'none'; }
-        else { document.getElementById('main-nav').style.display = ''; }
+        var c = document.querySelector('.container');
+        if (name === 'dashboard') { loadDashboard(); document.getElementById('main-nav').style.display = 'none'; c.style.maxWidth = '100%'; c.style.padding = '0'; }
+        else if (name === 'banned') { document.getElementById('main-nav').style.display = 'none'; c.style.maxWidth = ''; c.style.padding = ''; }
+        else { document.getElementById('main-nav').style.display = ''; c.style.maxWidth = ''; c.style.padding = ''; }
     }
 
     function showAuthTab(t) {
