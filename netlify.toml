@@ -1,0 +1,11 @@
+[build]
+  functions = "netlify/functions"
+
+[[plugins]]
+  package = "@netlify/plugin-blobs"
+
+[functions]
+  node_bundler = "esbuild"
+
+[blobs]
+  stores = ["bans"]

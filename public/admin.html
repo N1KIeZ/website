@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - License Keys</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="brand">
+            <h1>nikita.gg</h1>
+            <p>Admin Dashboard</p>
+        </div>
+
+        <div id="admin-auth" class="admin-auth">
+            <h2>Admin Access</h2>
+            <p>Enter your admin API key</p>
+            <div class="field">
+                <label>API Key</label>
+                <input type="password" id="admin-key-input" placeholder="Enter admin key" autocomplete="off">
+            </div>
+            <button class="btn btn-primary" onclick="loginAdmin()">Access Dashboard</button>
+        </div>
+
+        <div id="admin-dashboard" class="hidden">
+            <div class="admin-header">
+                <div>
+                    <h1>Admin Dashboard</h1>
+                    <span>License Key Management</span>
+                </div>
+                <button class="btn btn-secondary" onclick="logoutAdmin()" style="width:auto;padding:10px 24px;">Logout</button>
+            </div>
+
+            <div class="stats-grid" id="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-available" style="color:#40e0d0;">0</div>
+                    <div class="stat-label">Available</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-used" style="color:#58a6ff;">0</div>
+                    <div class="stat-label">Used</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-banned" style="color:#ff6a6a;">0</div>
+                    <div class="stat-label">Banned</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Generate Keys</div>
+                <div class="gen-controls">
+                    <div class="field">
+                        <label>Quantity</label>
+                        <input type="number" id="gen-amount" value="1" min="1" max="1000" step="1">
+                    </div>
+                    <button class="btn btn-primary" onclick="doGenerate()">Generate</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Key Management</div>
+
+                <div class="bulk-bar">
+                    <span class="selection-count" id="selection-count">0 selected</span>
+                    <button class="btn btn-secondary" onclick="selectAll()">Select All</button>
+                    <button class="btn btn-secondary" onclick="deselectAll()">Deselect</button>
+                    <button class="btn btn-danger" id="btn-ban-selected" onclick="banSelected()" disabled>Ban Selected</button>
+                    <button class="btn btn-primary" id="btn-unban-selected" onclick="unbanSelected()" disabled style="background:linear-gradient(135deg,#0077be,#40e0d0);">Unban Selected</button>
+                    <button class="btn btn-secondary" onclick="exportCSV()">Export CSV</button>
+                </div>
+
+                <div class="loading" id="loading-indicator">Loading keys...</div>
+                <div class="table-container" id="table-container" style="display:none;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="checkbox-col"><input type="checkbox" id="select-all-header" onchange="toggleSelectAll(this)"></th>
+                                <th>License Key</th>
+                                <th>Status</th>
+                                <th>HWID</th>
+                                <th>Activated</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="keys-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-container" id="toast-container"></div>
+
+    <script src="js/key-system.js"></script>
+    <script>
+        var ADMIN_KEY_STORAGE = 'admin_api_key';
+        var currentAdminKey = localStorage.getItem(ADMIN_KEY_STORAGE) || '';
+        var keysData = [];
+        var selectedKeys = new Set();
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var saved = localStorage.getItem(ADMIN_KEY_STORAGE);
+            if (saved) {
+                currentAdminKey = saved;
+                document.getElementById('admin-key-input').value = saved;
+                tryLogin();
+            }
+        });
+
+        function showToast(msg, type) {
+            var container = document.getElementById('toast-container');
+            var toast = document.createElement('div');
+            toast.className = 'toast toast-' + type;
+            toast.textContent = msg;
+            container.appendChild(toast);
+            setTimeout(function () { toast.remove(); }, 3000);
+        }
+
+        function loginAdmin() {
+            var key = document.getElementById('admin-key-input').value.trim();
+            if (!key) { showToast('Enter admin key', 'error'); return; }
+            currentAdminKey = key;
+            tryLogin();
+        }
+
+        async function tryLogin() {
+            try {
+                var stock = await KeySystem.getStock(currentAdminKey);
+                localStorage.setItem(ADMIN_KEY_STORAGE, currentAdminKey);
+                document.getElementById('admin-auth').classList.add('hidden');
+                document.getElementById('admin-dashboard').classList.remove('hidden');
+                loadDashboard();
+            } catch (e) {
+                showToast('Invalid admin key or server unreachable', 'error');
+                document.getElementById('admin-auth').classList.remove('hidden');
+                document.getElementById('admin-dashboard').classList.add('hidden');
+            }
+        }
+
+        function logoutAdmin() {
+            localStorage.removeItem(ADMIN_KEY_STORAGE);
+            currentAdminKey = '';
+            document.getElementById('admin-auth').classList.remove('hidden');
+            document.getElementById('admin-dashboard').classList.add('hidden');
+            document.getElementById('admin-key-input').value = '';
+            showToast('Logged out', 'info');
+        }
+
+        async function loadDashboard() {
+            document.getElementById('loading-indicator').style.display = 'block';
+            document.getElementById('table-container').style.display = 'none';
+            try {
+                var stock = await KeySystem.getStock(currentAdminKey);
+                document.getElementById('stat-available').textContent = stock.available;
+                document.getElementById('stat-used').textContent = stock.used;
+                document.getElementById('stat-banned').textContent = stock.banned;
+
+                var result = await KeySystem.listKeys(currentAdminKey);
+                keysData = result.keys || [];
+                renderKeys(keysData);
+            } catch (e) {
+                showToast('Failed to load dashboard', 'error');
+            }
+        }
+
+        function renderKeys(keys) {
+            var tbody = document.getElementById('keys-tbody');
+            tbody.innerHTML = '';
+            document.getElementById('loading-indicator').style.display = 'none';
+            document.getElementById('table-container').style.display = 'block';
+            selectedKeys.clear();
+            updateSelectionUI();
+
+            keys.forEach(function (k) {
+                var tr = document.createElement('tr');
+                var statusClass = 'status-' + k.status;
+                var statusText = k.status.charAt(0).toUpperCase() + k.status.slice(1);
+                var hwid = k.hwid ? k.hwid.substring(0, 14) + '...' : '-';
+                var activated = k.activated_at ? new Date(k.activated_at).toLocaleDateString() : '-';
+                var created = k.created ? new Date(k.created).toLocaleDateString() : '-';
+
+                var isBanned = k.status === 'banned';
+
+                tr.innerHTML = [
+                    '<td><input type="checkbox" class="key-checkbox" value="' + k.key.replace(/"/g, '&quot;') + '"></td>',
+                    '<td class="key-cell">' + k.key + '</td>',
+                    '<td><span class="status-badge ' + statusClass + '">' + statusText + '</span></td>',
+                    '<td>' + hwid + '</td>',
+                    '<td>' + activated + '</td>',
+                    '<td>' + created + '</td>',
+                    '<td class="actions">',
+                    '<button class="btn-action-ban" onclick="doBan(\'' + k.key.replace(/'/g, "\\'") + '\')"' + (isBanned ? ' disabled' : '') + '>Ban</button>',
+                    '<button class="btn-action-unban" onclick="doUnban(\'' + k.key.replace(/'/g, "\\'") + '\')"' + (!isBanned ? ' disabled' : '') + '>Unban</button>',
+                    '</td>',
+                ].join('');
+                tbody.appendChild(tr);
+            });
+
+            document.querySelectorAll('.key-checkbox').forEach(function (cb) {
+                cb.addEventListener('change', function () {
+                    if (cb.checked) selectedKeys.add(cb.value);
+                    else selectedKeys.delete(cb.value);
+                    updateSelectionUI();
+                });
+            });
+        }
+
+        function updateSelectionUI() {
+            var count = selectedKeys.size;
+            document.getElementById('selection-count').textContent = count + ' selected';
+            document.getElementById('btn-ban-selected').disabled = count === 0;
+            document.getElementById('btn-unban-selected').disabled = count === 0;
+        }
+
+        function selectAll() {
+            document.querySelectorAll('.key-checkbox').forEach(function (cb) {
+                cb.checked = true;
+                selectedKeys.add(cb.value);
+            });
+            updateSelectionUI();
+        }
+
+        function deselectAll() {
+            document.querySelectorAll('.key-checkbox').forEach(function (cb) {
+                cb.checked = false;
+            });
+            selectedKeys.clear();
+            updateSelectionUI();
+        }
+
+        function toggleSelectAll(header) {
+            document.querySelectorAll('.key-checkbox').forEach(function (cb) {
+                cb.checked = header.checked;
+                if (header.checked) selectedKeys.add(cb.value);
+                else selectedKeys.delete(cb.value);
+            });
+            updateSelectionUI();
+        }
+
+        async function doGenerate() {
+            var amount = parseInt(document.getElementById('gen-amount').value) || 1;
+            if (amount < 1 || amount > 1000) {
+                showToast('Amount 1-1000', 'error');
+                return;
+            }
+            try {
+                var keys = await KeySystem.generateKeys(amount, currentAdminKey);
+                showToast('Generated ' + keys.length + ' key(s)', 'success');
+                document.getElementById('gen-amount').value = 1;
+                loadDashboard();
+            } catch (e) {
+                showToast('Failed to generate keys', 'error');
+            }
+        }
+
+        async function doBan(key) {
+            try {
+                var result = await KeySystem.banKey(key, currentAdminKey);
+                showToast(result.success ? 'Key banned' : (result.message || 'Failed'), result.success ? 'success' : 'error');
+                loadDashboard();
+            } catch (e) {
+                showToast('Failed to ban key', 'error');
+            }
+        }
+
+        async function doUnban(key) {
+            try {
+                var result = await KeySystem.unbanKey(key, currentAdminKey);
+                showToast(result.success ? 'Key unbanned' : (result.message || 'Failed'), result.success ? 'success' : 'error');
+                loadDashboard();
+            } catch (e) {
+                showToast('Failed to unban key', 'error');
+            }
+        }
+
+        async function banSelected() {
+            var keys = Array.from(selectedKeys);
+            for (var i = 0; i < keys.length; i++) {
+                try { await KeySystem.banKey(keys[i], currentAdminKey); } catch (_) {}
+            }
+            showToast('Banned ' + keys.length + ' key(s)', 'success');
+            selectedKeys.clear();
+            loadDashboard();
+        }
+
+        async function unbanSelected() {
+            var keys = Array.from(selectedKeys);
+            for (var i = 0; i < keys.length; i++) {
+                try { await KeySystem.unbanKey(keys[i], currentAdminKey); } catch (_) {}
+            }
+            showToast('Unbanned ' + keys.length + ' key(s)', 'success');
+            selectedKeys.clear();
+            loadDashboard();
+        }
+
+        function exportCSV() {
+            if (keysData.length === 0) { showToast('No keys to export', 'error'); return; }
+            var csv = ['Key,Status,HWID,Activated,Created'];
+            keysData.forEach(function (k) {
+                csv.push('"' + k.key + '","' + k.status + '","' + (k.hwid || '') + '","' + (k.activated_at || '') + '","' + (k.created || '') + '"');
+            });
+            var blob = new Blob([csv.join('\n')], { type: 'text/csv' });
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = 'keys-export-' + new Date().toISOString().split('T')[0] + '.csv';
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('Exported to CSV', 'success');
+        }
+    </script>
+</body>
+</html>

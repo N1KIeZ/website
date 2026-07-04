@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>nikita.gg</title>
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/pricing.css">
+    <link rel="stylesheet" href="css/auth.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/admin.css">
+    <link rel="stylesheet" href="css/loader.css">
+    <link rel="stylesheet" href="css/ban.css">
+</head>
+<body>
+
+<nav id="main-nav">
+    <a data-nav="pricing" onclick="show('pricing')">pricing</a>
+    <a data-nav="register" onclick="showAuth('register')">register</a>
+    <a data-nav="login" onclick="showAuth('login')">login</a>
+    <span id="nav-underline"></span>
+</nav>
+
+<section id="view-home" class="view visible">
+    <svg class="palm" viewBox="0 0 220 260" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+            <linearGradient id="palm-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#f27ab8"/>
+                <stop offset="55%" stop-color="#ec3fa0"/>
+                <stop offset="100%" stop-color="#e91e8c"/>
+            </linearGradient>
+        </defs>
+        <g fill="url(#palm-grad)">
+            <path d="M104 252 C100 205 100 160 106 122 C109 104 112 96 114 88 L126 92 C121 102 117 114 113 132 C108 166 110 208 118 252 Z"/>
+            <ellipse cx="117" cy="92" rx="12" ry="9"/>
+            <path d="M117 92 C88 74 54 70 24 84 C54 80 86 88 113 106 Z"/>
+            <path d="M117 92 C96 64 66 52 34 56 C64 60 92 74 111 100 Z"/>
+            <path d="M117 92 C106 62 104 34 116 8 C112 36 118 64 125 88 Z"/>
+            <path d="M117 92 C123 60 134 34 158 16 C139 38 131 64 128 92 Z"/>
+            <path d="M117 92 C139 66 167 54 196 58 C168 64 144 78 125 102 Z"/>
+            <path d="M117 92 C145 80 175 82 198 98 C172 92 146 96 122 108 Z"/>
+            <circle cx="110" cy="100" r="7"/>
+            <circle cx="122" cy="102" r="6"/>
+        </g>
+    </svg>
+    <div class="hero-content">
+        <div class="logo">nikita.gg</div>
+        <p class="tagline">premium software, verified licenses</p>
+    </div>
+</section>
+
+<section id="view-pricing" class="view">
+    <h2 class="section-title">choose your plan</h2>
+    <div class="plans">
+        <div class="plan">
+            <h3>1 month</h3>
+            <div class="price">$7.99</div>
+            <div class="period">per month</div>
+            <ul>
+                <li>Full access</li>
+                <li>Premium features</li>
+                <li>Priority support</li>
+                <li>Regular updates</li>
+            </ul>
+            <button class="btn-outline" onclick="showAuth('register')">Purchase</button>
+        </div>
+        <div class="plan popular">
+            <div class="badge">MOST POPULAR</div>
+            <h3>3 months</h3>
+            <div class="price">$18.99</div>
+            <div class="period">per 3 months</div>
+            <ul>
+                <li>Full access</li>
+                <li>Premium features</li>
+                <li>Priority support</li>
+                <li>Regular updates</li>
+                <li>20% savings</li>
+            </ul>
+            <button class="btn-outline" onclick="showAuth('register')">Purchase</button>
+        </div>
+        <div class="plan">
+            <h3>6 months</h3>
+            <div class="price">$33.99</div>
+            <div class="period">per 6 months</div>
+            <ul>
+                <li>Full access</li>
+                <li>Beta features</li>
+                <li>Priority support</li>
+                <li>Beta updates</li>
+                <li>30% savings</li>
+            </ul>
+            <button class="btn-outline" onclick="showAuth('register')">Purchase</button>
+        </div>
+    </div>
+</section>
+
+<section id="view-auth" class="view">
+    <div class="auth-box">
+        <div class="auth-tabs">
+            <div class="auth-tab" id="tab-register" onclick="showAuth('register')">register</div>
+            <div class="auth-tab" id="tab-login" onclick="showAuth('login')">login</div>
+        </div>
+
+        <form id="form-register" onsubmit="return doRegister(event)">
+            <div class="field">
+                <label>username</label>
+                <input type="text" id="reg-user" placeholder="enter username" autocomplete="off">
+            </div>
+            <div class="field">
+                <label>email</label>
+                <input type="text" id="reg-email" placeholder="enter email" autocomplete="off">
+            </div>
+            <div class="field">
+                <label>password</label>
+                <input type="password" id="reg-pass" placeholder="enter password">
+            </div>
+            <div class="field">
+                <label>license key</label>
+                <input type="text" id="reg-key" placeholder="enter license key" autocomplete="off">
+            </div>
+            <div class="captcha">
+                <div class="captcha-q" id="captcha-q-register">what is ?</div>
+                <input type="text" id="captcha-a-register" placeholder="enter captcha answer" autocomplete="off">
+                <button type="button" class="captcha-refresh" onclick="newCaptcha('register')">refresh</button>
+            </div>
+            <div class="form-error" id="err-register"></div>
+            <button type="submit" class="btn-primary">Register</button>
+        </form>
+
+        <form id="form-login" style="display:none" onsubmit="return doLogin(event)">
+            <div class="field">
+                <label>username</label>
+                <input type="text" id="log-user" placeholder="enter username" autocomplete="off">
+            </div>
+            <div class="field">
+                <label>password</label>
+                <input type="password" id="log-pass" placeholder="enter password">
+            </div>
+            <div class="captcha">
+                <div class="captcha-q" id="captcha-q-login">what is ?</div>
+                <input type="text" id="captcha-a-login" placeholder="enter captcha answer" autocomplete="off">
+                <button type="button" class="captcha-refresh" onclick="newCaptcha('login')">refresh</button>
+            </div>
+            <div class="form-error" id="err-login"></div>
+            <button type="submit" class="btn-primary">Login</button>
+        </form>
+    </div>
+</section>
+
+<section id="view-dashboard" class="view">
+    <div class="dash-wrap">
+        <div class="dash-head">
+            <h1>dashboard</h1>
+            <div class="welcome">welcome back, <span id="dash-user">user</span></div>
+        </div>
+
+        <div class="dash-grid">
+            <div class="dash-card accent">
+                <h4>subscription</h4>
+                <div class="big">3 months</div>
+                <div class="sub"><span class="status-dot-sm"></span><span class="ok">active</span> - 87 days remaining</div>
+            </div>
+            <div class="dash-card">
+                <h4>status</h4>
+                <div class="big ok">undetected</div>
+                <div class="sub">last checked 2 minutes ago</div>
+            </div>
+            <div class="dash-card">
+                <h4>version</h4>
+                <div class="big">v2.4.1</div>
+                <div class="sub">you are on the latest build</div>
+            </div>
+        </div>
+
+        <div class="dash-grid two-col">
+            <div class="dash-card">
+                <h4>recent activity</h4>
+                <ul class="dash-list">
+                    <li><span>signed in</span><span class="t">just now</span></li>
+                    <li><span>update v2.4.1 installed</span><span class="t">2 days ago</span></li>
+                    <li><span>license renewed</span><span class="t">6 days ago</span></li>
+                    <li><span>update v2.4.0 installed</span><span class="t">12 days ago</span></li>
+                </ul>
+            </div>
+            <div class="dash-card">
+                <h4>announcements</h4>
+                <ul class="dash-list">
+                    <li><span>v2.4.1 hotfix released</span><span class="t">2 days ago</span></li>
+                    <li><span>new premium features added</span><span class="t">1 week ago</span></li>
+                    <li><span>priority support hours extended</span><span class="t">2 weeks ago</span></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="dash-actions">
+            <button class="btn-outline">Download</button>
+            <button class="btn-outline" onclick="logout()">Log out</button>
+        </div>
+    </div>
+</section>
+
+<section id="view-banned" class="view">
+    <div class="ban-container">
+        <div class="ban-icon">
+            <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>
+            </svg>
+        </div>
+        <h1 class="ban-title" id="ban-title">access revoked</h1>
+        <p class="ban-subtitle" id="ban-subtitle">your license has been terminated</p>
+        <div class="ban-key-box">
+            <span class="ban-key-label">license key</span>
+            <span class="ban-key-value" id="ban-key-display">XXXXX-****-****-****</span>
+        </div>
+        <p class="ban-reason">this key has been banned by the administrator.<br>all associated access has been revoked.</p>
+        <p class="ban-contact">if you believe this is an error, contact support.</p>
+        <button class="btn-ban-back" onclick="banLogout()">return to home</button>
+    </div>
+</section>
+
+<section id="view-admin" class="view">
+    <div id="admin-auth" style="display:none; max-width:400px; margin:0 auto; text-align:center; padding-top:120px;">
+        <h2 style="font-size:28px; font-weight:200; color:#f2ebf0; margin-bottom:8px;">admin access</h2>
+        <p style="color:#8f8089; margin-bottom:32px;">enter admin api key</p>
+        <form id="admin-auth-form">
+            <div class="field" style="text-align:left; margin-bottom:24px;">
+                <label>api key</label>
+                <input type="password" id="admin-key-input" placeholder="enter admin key" autocomplete="off" style="width:100%;">
+            </div>
+            <button type="submit" class="btn-primary">Access Dashboard</button>
+        </form>
+    </div>
+
+    <div id="admin-dashboard" style="display:none;">
+        <div class="admin-header">
+            <div class="admin-header-left">
+                <h1>admin dashboard</h1>
+                <span class="admin-badge">nikita.gg</span>
+            </div>
+            <button id="btn-admin-logout" class="btn-outline" style="padding:10px 24px;">Logout</button>
+        </div>
+
+        <div class="admin-stats">
+            <div class="stat-card">
+                <div class="stat-value" id="stat-available">0</div>
+                <div class="stat-label">Available</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="stat-used">0</div>
+                <div class="stat-label">Used</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="stat-banned">0</div>
+                <div class="stat-label">Banned</div>
+            </div>
+        </div>
+
+        <div class="admin-section">
+            <div class="section-header">
+                <h3>generate keys</h3>
+            </div>
+            <div class="gen-controls">
+                <div class="field">
+                    <label>quantity</label>
+                    <input type="number" id="gen-amount" value="1" min="1" max="1000" step="1">
+                </div>
+                <button id="btn-generate" class="btn-primary" style="width:auto; align-self:flex-end;">Generate</button>
+            </div>
+        </div>
+
+        <div class="admin-section">
+            <div class="section-header">
+                <h3>key management</h3>
+                <div class="selection-info" id="selection-count">0 selected</div>
+            </div>
+            <div class="bulk-actions">
+                <button id="btn-select-all" class="btn-outline" style="padding:8px 16px;">Select All</button>
+                <button id="btn-deselect-all" class="btn-outline" style="padding:8px 16px;">Deselect All</button>
+                <button id="btn-ban-selected" class="btn-ban" disabled>Ban Selected</button>
+                <button id="btn-unban-selected" class="btn-unban" disabled>Unban Selected</button>
+                <button id="btn-copy-selected" class="btn-outline" disabled style="padding:8px 16px;">Copy</button>
+                <button id="btn-export" class="btn-outline" style="padding:8px 16px;">Export CSV</button>
+            </div>
+            <div class="table-container">
+                <table class="keys-table">
+                    <thead>
+                        <tr>
+                            <th style="width:40px;"><input type="checkbox" id="select-all-header"></th>
+                            <th>License Key</th>
+                            <th>Status</th>
+                            <th>HWID</th>
+                            <th>Activated</th>
+                            <th>Created</th>
+                            <th style="width:160px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="keys-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="loading-indicator" class="loading-overlay" style="display:none;">
+            <div class="loader-spinner"></div>
+            <span>Loading...</span>
+        </div>
+    </div>
+</section>
+
+<div id="loader">
+    <div class="loader-logo">nikita.gg</div>
+    <div class="loader-bar"><div class="loader-bar-fill" id="loader-fill"></div></div>
+    <div class="loader-status" id="loader-status">authenticating...</div>
+</div>
+
+<script src="js/nav.js"></script>
+    <script src="js/captcha.js"></script>
+    <script src="js/keys.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/license.js"></script>
+    <script src="js/admin.js"></script>
+    <script src="js/transitions.js"></script>
+    <script src="js/main.js"></script>
+
+</body>
+</html>

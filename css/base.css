@@ -1,0 +1,173 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-weight: 300;
+    background: #0d090c;
+    color: #e8e0e6;
+    min-height: 100vh;
+    background-image:
+        radial-gradient(ellipse 60% 50% at 50% 45%, rgba(120, 20, 80, 0.14), transparent 70%),
+        radial-gradient(ellipse 40% 40% at 75% 20%, rgba(90, 15, 60, 0.10), transparent 70%),
+        radial-gradient(ellipse 45% 45% at 20% 80%, rgba(80, 10, 50, 0.08), transparent 70%);
+    background-attachment: fixed;
+}
+
+nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    padding: 28px 38px;
+    display: flex;
+    gap: 34px;
+    z-index: 100;
+}
+nav a {
+    color: #b8a8b4;
+    text-decoration: none;
+    font-size: 15px;
+    letter-spacing: 0.5px;
+    padding-bottom: 4px;
+    transition: color .2s;
+    cursor: pointer;
+}
+nav a:hover { color: #fff; }
+nav a.active { color: #fff; }
+
+#nav-underline {
+    position: absolute;
+    bottom: 22px;
+    height: 2px;
+    background: #e91e8c;
+    left: 0;
+    width: 0;
+    opacity: 0;
+    transition: left .3s cubic-bezier(.4, 0, .2, 1),
+                width .3s cubic-bezier(.4, 0, .2, 1),
+                opacity .25s ease;
+}
+
+.view { display: none; min-height: 100vh; }
+.view.visible { display: block; }
+
+#view-home {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+#view-home.visible { display: flex; }
+
+.palm {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -58%);
+    width: clamp(320px, 42vw, 620px);
+    opacity: 0.14;
+    pointer-events: none;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+}
+
+.logo { position: relative; z-index: 1; }
+
+.logo {
+    font-size: clamp(90px, 16vw, 220px);
+    font-weight: 200;
+    letter-spacing: 2px;
+    background: linear-gradient(100deg, #f5eef3 0%, #f5eef3 22%, #f27ab8 45%, #ec3fa0 62%, #e91e8c 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    user-select: none;
+}
+
+.tagline {
+    font-size: 14px;
+    font-weight: 300;
+    color: #5a4d55;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-top: 20px;
+}
+
+.btn-outline {
+    display: inline-block;
+    width: 100%;
+    padding: 15px 0;
+    background: transparent;
+    border: 1px solid #e91e8c;
+    color: #e878b4;
+    font-size: 13px;
+    letter-spacing: 3px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background .2s, color .2s;
+    text-transform: uppercase;
+}
+.btn-outline:hover {
+    background: rgba(233, 30, 140, 0.12);
+    color: #fff;
+}
+
+.btn-primary {
+    display: inline-block;
+    width: 100%;
+    padding: 15px 0;
+    background: #e91e8c;
+    border: 1px solid #e91e8c;
+    color: #fff;
+    font-size: 13px;
+    letter-spacing: 3px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background .2s;
+    text-transform: uppercase;
+}
+.btn-primary:hover {
+    background: #d1197a;
+}
+
+body.loaded nav {
+    animation: navIn .7s ease both;
+}
+body.loaded #view-home .logo:not(.enter) {
+    animation: logoInLoad 1.1s ease .15s both;
+}
+body.loaded #view-home .palm {
+    animation: palmIn 1.4s ease .3s both;
+}
+body.loaded #view-home .tagline:not(.enter) {
+    animation: taglineIn 1s ease .5s both;
+}
+@keyframes palmIn {
+    from { opacity: 0; }
+    to   { opacity: 0.14; }
+}
+@keyframes navIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes logoInLoad {
+    from { opacity: 0; transform: scale(.96); }
+    to   { opacity: 1; transform: scale(1); }
+}
+@keyframes taglineIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+#view-home .logo.enter {
+    animation: logoIn .9s ease both;
+}
+@keyframes logoIn {
+    from { opacity: 0; transform: scale(.96); }
+    to   { opacity: 1; transform: scale(1); }
+}

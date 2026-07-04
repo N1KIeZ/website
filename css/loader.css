@@ -1,0 +1,56 @@
+#loader {
+    position: fixed;
+    inset: 0;
+    background: #0d090c;
+    background-image: radial-gradient(ellipse 60% 50% at 50% 45%, rgba(120, 20, 80, 0.14), transparent 70%);
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    opacity: 0;
+    transition: opacity .4s ease;
+}
+#loader.on { display: flex; }
+#loader.shown { opacity: 1; }
+
+.loader-logo {
+    font-size: 64px;
+    font-weight: 200;
+    letter-spacing: 2px;
+    background: linear-gradient(100deg, #f5eef3 0%, #f5eef3 22%, #f27ab8 45%, #ec3fa0 62%, #e91e8c 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    user-select: none;
+    animation: loaderPulse 1.6s ease-in-out infinite;
+    margin-bottom: 46px;
+}
+@keyframes loaderPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: .45; }
+}
+
+.loader-bar {
+    width: 260px;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+    margin-bottom: 26px;
+}
+.loader-bar-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #ec3fa0, #e91e8c);
+    box-shadow: 0 0 10px rgba(233, 30, 140, 0.7);
+    transition: width .45s ease;
+}
+
+.loader-status {
+    font-family: "Consolas", "Courier New", monospace;
+    font-size: 13px;
+    letter-spacing: 2px;
+    color: #9c8d96;
+    min-height: 18px;
+}
+.loader-status .ok { color: #e878b4; }

@@ -1,0 +1,109 @@
+#view-banned {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 40px 20px;
+}
+#view-banned.visible { display: flex; }
+
+.ban-container {
+    text-align: center;
+    max-width: 500px;
+    animation: banFadeIn .5s ease both;
+}
+
+@keyframes banFadeIn {
+    from { opacity: 0; transform: scale(.97); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+.ban-icon {
+    width: 90px;
+    height: 90px;
+    margin: 0 auto 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 50, 80, 0.3);
+    color: #ff3250;
+    animation: banPulse 2.5s ease-in-out infinite;
+}
+
+@keyframes banPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(255, 50, 80, 0.2); }
+    50%      { box-shadow: 0 0 0 14px rgba(255, 50, 80, 0); }
+}
+
+.ban-title {
+    font-size: 28px;
+    font-weight: 300;
+    letter-spacing: 6px;
+    color: #ff3250;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+.ban-subtitle {
+    font-size: 14px;
+    font-weight: 300;
+    color: #8f8089;
+    margin-bottom: 32px;
+}
+
+.ban-key-box {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 16px 28px;
+    border: 1px solid rgba(255, 50, 80, 0.2);
+    margin-bottom: 24px;
+}
+
+.ban-key-label {
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #7a6d75;
+}
+
+.ban-key-value {
+    font-family: "Consolas", "Courier New", monospace;
+    font-size: 15px;
+    letter-spacing: 2px;
+    color: #ff6a80;
+}
+
+.ban-reason {
+    font-size: 13px;
+    color: #8f8089;
+    line-height: 1.7;
+    margin-bottom: 10px;
+}
+
+.ban-contact {
+    font-size: 12px;
+    color: #5a4d55;
+    margin-bottom: 32px;
+}
+
+.btn-ban-back {
+    display: inline-block;
+    padding: 14px 40px;
+    background: transparent;
+    border: 1px solid rgba(255, 50, 80, 0.35);
+    color: #ff6a80;
+    font-size: 13px;
+    letter-spacing: 2px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background .2s, color .2s;
+    text-transform: uppercase;
+}
+.btn-ban-back:hover {
+    background: rgba(255, 50, 80, 0.1);
+    color: #ff8a9a;
+}

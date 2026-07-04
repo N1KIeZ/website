@@ -1,0 +1,43 @@
+Never add any comments to any file in a code file! if ai comments were written, remove all of them.
+Never auto open the website, I'm doing that. I can host the website by myself to see what you did!
+Never use this — character.
+
+--- PROJECT INFO (for AI context) ---
+
+What this is:
+"beach" - a dark-themed static website (no backend, no build tools, plain HTML/CSS/JS).
+Design: near-black background (#0d090c) with subtle magenta radial glows, thin/light Segoe UI
+typography, pink/magenta accent color (#e91e8c), white-to-pink gradient wordmark "beach".
+The design was replicated from screenshots ss1.png, ss2.png, ss3.png in the project root.
+
+Structure:
+index.html          - all markup; single page with hidden/shown view sections
+css/base.css        - reset, body background, nav + sliding underline, hero logo, shared .btn-outline, page-load animations
+css/pricing.css     - "choose your plan" section, plan cards, MOST POPULAR badge
+css/auth.css        - register/login tabs, underline-style inputs, captcha box, error text
+css/dashboard.css   - dashboard cards/lists + enter (dashIn) and exit (dashOut) animations
+css/loader.css      - fullscreen loading overlay (pulsing logo, progress bar, status text)
+js/nav.js           - show(name) view switcher, showAuth(tab), sliding nav underline (updateNavUnderline)
+js/captcha.js       - math captcha (a x b), newCaptcha(which)/checkCaptcha(which), keys: 'register'/'login'
+js/auth.js          - doRegister/doLogin form handlers
+js/transitions.js   - enterDashboard(username) and logout() with the loading overlay sequences
+js/main.js          - adds body.loaded class to trigger page-load entrance animation
+
+Views (sections in index.html, toggled with .visible):
+view-home       - hero with gradient "beach" logo and a faint pink inline-SVG palm graphic behind it (.palm)
+view-pricing    - 1 month $7.99 / 3 months $18.99 (MOST POPULAR, pink border) / 6 months $33.99; all say "Full access"
+view-auth       - register + login forms with tabs and captcha each
+view-dashboard  - subscription/status/version cards, recent activity, announcements, Download + Log out
+
+Behavior rules (intentional, do not "fix"):
+- There is NO real authentication yet. Registering creates no account, it just leads to the dashboard
+  (all fields must be filled + captcha correct).
+- Login only accepts username "user" and password "pass" (also requires captcha).
+- PURCHASE buttons on pricing go to the register form.
+- Login/register success plays a loading overlay (authenticating -> loading dashboard -> access granted),
+  then the dashboard animates in staggered.
+- Log out plays a reverse sequence (signing out -> ending session -> session closed) and lands on home.
+- Nav underline slides smoothly between pricing/register/login and fades out on views with no active tab.
+- Page load has a small entrance animation (nav fades down, logo fades/scales in).
+
+Dashboard data (subscription days, version, activity, announcements) is static placeholder content.

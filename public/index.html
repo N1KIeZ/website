@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>License Activation</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="brand">
+            <h1>nikita.gg</h1>
+            <p>License Activation</p>
+        </div>
+
+        <div class="card" id="license-card">
+            <div class="card-title">Activate Your License</div>
+
+            <div class="field">
+                <label>License Key</label>
+                <input type="text" id="key-input" placeholder="XXXXX-XXXXX-XXXXX-XXXXX" autocomplete="off" spellcheck="false">
+            </div>
+
+            <div id="result" class="result-box"></div>
+
+            <div class="hwid-display" id="hwid-display"></div>
+
+            <button class="btn btn-primary" id="activate-btn" onclick="doActivate()">Activate</button>
+
+            <button class="btn btn-secondary" style="margin-top:12px;" onclick="clearLicense()">Clear Saved License</button>
+        </div>
+
+        <div class="card" id="status-card" style="display:none;">
+            <div class="card-title">License Status</div>
+            <div id="license-status"></div>
+            <div style="margin-top:16px;">
+                <button class="btn btn-secondary" onclick="showActivation()">Activate Another Key</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-container" id="toast-container"></div>
+    <div class="status-bar">HWID generated automatically on page load</div>
+
+    <script src="js/hwid.js"></script>
+    <script src="js/key-system.js"></script>
+    <script>
+        var LICENSE_KEY_STORAGE = 'license_key';
+        var LICENSE_STATUS_STORAGE = 'license_status';
+
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('hwid-display').textContent = 'HWID: ' + HWID.get();
+
+            document.getElementById('key-input').addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') doActivate();
+            });
+
+            checkExistingLicense();
+        });
+
+        function showToast(msg, type) {
+            var container = document.getElementById('toast-container');
+            var toast = document.createElement('div');
+            toast.className = 'toast toast-' + type;
+            toast.textContent = msg;
+            container.appendChild(toast);
+            setTimeout(function () { toast.remove(); }, 3000);
+        }
+
+        function setResult(msg, type) {
+            var el = document.getElementById('result');
+            el.className = 'result-box ' + type;
+            el.textContent = msg;
+        }
+
+        function showActivation() {
+            document.getElementById('license-card').style.display = 'block';
+            document.getElementById('status-card').style.display = 'none';
+            setResult('', '');
+        }
+
+        function clearLicense() {
+            localStorage.removeItem(LICENSE_KEY_STORAGE);
+            localStorage.removeItem(LICENSE_STATUS_STORAGE);
+            showActivation();
+            document.getElementById('key-input').value = '';
+            showToast('License cleared', 'info');
+        }
+
+        async function doActivate() {
+            var keyInput = document.getElementById('key-input');
+            var key = keyInput.value.trim().toUpperCase();
+            if (!key) {
+                setResult('Please enter a license key', 'error');
+                return;
+            }
+
+            var btn = document.getElementById('activate-btn');
+            btn.disabled = true;
+            btn.textContent = 'Validating...';
+            setResult('', '');
+
+            try {
+                var result = await KeySystem.validateKey(key, HWID.get());
+
+                if (result.valid) {
+                    localStorage.setItem(LICENSE_KEY_STORAGE, key);
+                    localStorage.setItem(LICENSE_STATUS_STORAGE, JSON.stringify(result));
+                    setResult(result.message || 'License activated successfully', 'success');
+                    showToast('License activated!', 'success');
+                    showLicenseStatus(result);
+                } else {
+                    setResult(result.message || 'Activation failed', 'error');
+                    showToast(result.message || 'Activation failed', 'error');
+                }
+            } catch (e) {
+                setResult('Connection error - is the server running?', 'error');
+                showToast('Server unreachable', 'error');
+            }
+
+            btn.disabled = false;
+            btn.textContent = 'Activate';
+        }
+
+        function showLicenseStatus(result) {
+            document.getElementById('license-card').style.display = 'none';
+            document.getElementById('status-card').style.display = 'block';
+
+            var statusEl = document.getElementById('license-status');
+            var key = localStorage.getItem(LICENSE_KEY_STORAGE);
+            var parts = [
+                '<div class="result-box success" style="display:block;">License Active</div>',
+                '<div style="margin-top:20px;">',
+                '<div class="field"><label>Active Key</label>',
+                '<input type="text" value="' + key + '" readonly style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.12);padding:14px 16px;width:100%;font-family:Consolas,monospace;font-size:13px;color:#e6edf3;outline:none;">',
+                '</div></div>',
+                '<div style="font-size:12px;color:#8b949e;margin-top:12px;">HWID: ' + HWID.get() + '</div>',
+            ];
+            statusEl.innerHTML = parts.join('');
+        }
+
+        async function checkExistingLicense() {
+            var storedKey = localStorage.getItem(LICENSE_KEY_STORAGE);
+            if (!storedKey) return;
+
+            try {
+                var result = await KeySystem.validateKey(storedKey, HWID.get());
+                if (result.valid) {
+                    localStorage.setItem(LICENSE_STATUS_STORAGE, JSON.stringify(result));
+                    showLicenseStatus(result);
+                    showToast('License validated', 'success');
+                } else {
+                    clearLicense();
+                    showToast('License invalid - please re-activate', 'error');
+                }
+            } catch (e) {
+                // server unreachable, show stored status if available
+                var status = localStorage.getItem(LICENSE_STATUS_STORAGE);
+                if (status) {
+                    try {
+                        var parsed = JSON.parse(status);
+                        if (parsed.valid) {
+                            showLicenseStatus(parsed);
+                        }
+                    } catch (_) {}
+                }
+            }
+        }
+    </script>
+</body>
+</html>
