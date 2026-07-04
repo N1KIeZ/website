@@ -148,11 +148,13 @@
         .auth-box {
             max-width: 460px;
             margin: 0 auto;
-            padding: 24px 28px;
+            padding: 20px 24px;
             border: 1px solid var(--border);
             border-radius: var(--radius);
             background: var(--bg-card);
         }
+        .auth-box .field { margin-bottom: 16px; }
+        .auth-box .field input { padding: 10px 14px; font-size: 14px; }
         .auth-tabs {
             display: flex;
             margin-bottom: 24px;
@@ -175,8 +177,8 @@
             background: var(--bg-elevated);
             border: 1px solid var(--border);
             border-radius: var(--radius);
-            padding: 16px 20px;
-            margin-bottom: 20px;
+            padding: 14px 16px;
+            margin-bottom: 16px;
             text-align: center;
         }
         .captcha-q {
@@ -388,7 +390,7 @@
     <a data-nav="login" onclick="showView('auth');showAuthTab('login')">login</a>
 </nav>
 
-<div class="container" style="display:flex;flex-direction:column;min-height:calc(100vh - 60px);">
+<div class="container" style="display:flex;flex-direction:column;min-height:calc(100vh - 80px);">
 
     <!-- HOME -->
     <div id="view-home" class="view visible">
