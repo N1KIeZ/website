@@ -146,7 +146,7 @@
         .plan li::before { content: "\2713"; color: var(--turquoise); margin-right: 10px; }
 
         #view-auth {
-            display: none;
+            display: flex;
             position: fixed;
             inset: 0;
             z-index: 50;
@@ -154,8 +154,14 @@
             justify-content: center;
             padding: 20px;
             background: var(--bg);
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity .2s ease, visibility .2s ease;
         }
-        #view-auth.visible { display: flex; }
+        #view-auth.visible { opacity: 1; visibility: visible; pointer-events: auto; }
+        .auth-back { position: absolute; top: 24px; left: 24px; background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 14px; font-family: inherit; transition: color .2s; }
+        .auth-back:hover { color: var(--text); }
         .auth-box {
             width: 100%;
             max-width: 420px;
@@ -193,48 +199,6 @@
 
         .form-error { color: #ff6a7a; font-size: 13px; text-align: center; margin-bottom: 16px; min-height: 16px; }
         .auth-box .btn-primary { padding: 14px 0; font-size: 13px; border-radius: 8px; }
-
-        .captcha-box {
-            background: var(--bg-elevated);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        .captcha-q {
-            font-family: "Consolas", monospace;
-            font-size: 15px;
-            color: var(--turquoise);
-            margin-bottom: 10px;
-            letter-spacing: 1px;
-        }
-        .captcha-box input {
-            width: 100%;
-            background: var(--bg);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 10px 12px;
-            font-size: 14px;
-            color: var(--text);
-            font-family: inherit;
-            outline: none;
-            margin-bottom: 8px;
-            transition: border-color .2s;
-        }
-        .captcha-box input:focus { border-color: var(--turquoise); box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.08); }
-        .captcha-refresh {
-            background: transparent;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            color: var(--text-dim);
-            font-size: 12px;
-            font-family: inherit;
-            padding: 6px 16px;
-            cursor: pointer;
-            transition: all .2s;
-        }
-        .captcha-refresh:hover { border-color: var(--text-dim); color: var(--text); }
 
         .dash-wrap { max-width: 900px; margin: 0 auto; padding: 30px 0; }
         .dash-head {
@@ -478,6 +442,7 @@
 
     <!-- AUTH (Register/Login) -->
     <div id="view-auth" class="view">
+        <button class="auth-back" onclick="showView('home')">← back</button>
         <div class="auth-box">
             <div class="auth-tabs">
                 <div class="auth-tab active" id="tab-register" onclick="showAuthTab('register')">register</div>
@@ -497,11 +462,6 @@
                     <div class="field-label"><label>License Key</label></div>
                     <div class="input-wrap"><input type="text" id="reg-key" placeholder="Paste your license key" autocomplete="off"></div>
                 </div>
-                <div class="captcha-box">
-                    <div class="captcha-q" id="captcha-q-register">what is ?</div>
-                    <input type="text" id="captcha-a-register" placeholder="Enter answer" autocomplete="off">
-                    <button type="button" class="captcha-refresh" onclick="newCaptcha('register')">refresh</button>
-                </div>
                 <div class="form-error" id="err-register"></div>
                 <button type="submit" class="btn btn-primary btn-block">Register</button>
             </form>
@@ -514,11 +474,6 @@
                 <div class="field">
                     <div class="field-label"><label>Password</label></div>
                     <div class="input-wrap"><input type="password" id="log-pass" placeholder="Enter password"></div>
-                </div>
-                <div class="captcha-box">
-                    <div class="captcha-q" id="captcha-q-login">what is ?</div>
-                    <input type="text" id="captcha-a-login" placeholder="Enter answer" autocomplete="off">
-                    <button type="button" class="captcha-refresh" onclick="newCaptcha('login')">refresh</button>
                 </div>
                 <div class="form-error" id="err-login"></div>
                 <button type="submit" class="btn btn-primary btn-block">Login</button>
@@ -682,16 +637,28 @@
     function setSession(u) { CURRENT_USER = u; localStorage.setItem(LS_SESSION, u); }
     function clearSession() { CURRENT_USER = null; localStorage.removeItem(LS_SESSION); }
 
-    /* ===== CAPTCHA ===== */
-    var captchas = {};
-    function newCaptcha(w) { var a = Math.floor(Math.random()*8)+2, b = Math.floor(Math.random()*8)+2; captchas[w] = a*b; document.getElementById('captcha-q-'+w).textContent = 'what is '+a+' \u00d7 '+b+'?'; document.getElementById('captcha-a-'+w).value = ''; }
-    function checkCaptcha(w) { var v = document.getElementById('captcha-a-'+w).value.trim(); return v !== '' && parseInt(v,10) === captchas[w]; }
-
     /* ===== VIEWS ===== */
     var currentView = 'home';
 
     function showView(name) {
         currentView = name;
+        var authEl = document.getElementById('view-auth');
+        if (name === 'auth') {
+            document.querySelectorAll('.view').forEach(function(v) { if (v !== authEl) v.classList.remove('visible'); });
+            authEl.classList.add('visible');
+            document.getElementById('main-nav').style.display = 'none';
+            document.querySelector('.container').style.maxWidth = '100%';
+            document.querySelector('.container').style.padding = '0';
+            return;
+        }
+        if (authEl.classList.contains('visible')) {
+            authEl.classList.remove('visible');
+            setTimeout(function() { showViewInner(name); }, 200);
+            return;
+        }
+        showViewInner(name);
+    }
+    function showViewInner(name) {
         document.querySelectorAll('.view').forEach(function(v) { v.classList.remove('visible'); });
         var el = document.getElementById('view-'+name);
         if (el) el.classList.add('visible');
@@ -702,7 +669,6 @@
         var c = document.querySelector('.container');
         if (name === 'dashboard') { loadDashboard(); document.getElementById('main-nav').style.display = 'none'; c.style.maxWidth = '100%'; c.style.padding = '0'; }
         else if (name === 'banned') { document.getElementById('main-nav').style.display = 'none'; c.style.maxWidth = ''; c.style.padding = ''; }
-        else if (name === 'auth') { document.getElementById('main-nav').style.display = 'none'; c.style.maxWidth = '100%'; c.style.padding = '0'; }
         else { document.getElementById('main-nav').style.display = ''; c.style.maxWidth = ''; c.style.padding = ''; }
     }
 
@@ -753,7 +719,6 @@
         err.textContent = '';
         if (!user || !pass || !key) { err.textContent = 'fill all fields'; return false; }
         if (!isValidKey(key)) { err.textContent = 'invalid license key'; return false; }
-        if (!checkCaptcha('register')) { err.textContent = 'incorrect captcha'; newCaptcha('register'); return false; }
         var accounts = getAccounts();
         if (accounts[user.toLowerCase()]) { err.textContent = 'username taken'; return false; }
         try {
@@ -773,9 +738,8 @@
         var pass = document.getElementById('log-pass').value;
         err.textContent = '';
         if (!user || !pass) { err.textContent = 'fill all fields'; return false; }
-        if (!checkCaptcha('login')) { err.textContent = 'incorrect captcha'; newCaptcha('login'); return false; }
         var account = findAccount(user, pass);
-        if (!account) { err.textContent = 'invalid credentials'; newCaptcha('login'); return false; }
+        if (!account) { err.textContent = 'invalid credentials'; return false; }
         setSession(user);
         enterDashboard(user, account.key);
         return false;
