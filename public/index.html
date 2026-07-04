@@ -38,7 +38,7 @@
         }
 
         .gg-badge {
-            font-size: 0.5em;
+            font-size: 0.7em;
             font-weight: 700;
             background: linear-gradient(135deg, var(--accent, #a855f7), #d946ef);
             -webkit-background-clip: text;
@@ -148,14 +148,14 @@
         .auth-box {
             max-width: 460px;
             margin: 0 auto;
-            padding: 36px 32px;
+            padding: 24px 28px;
             border: 1px solid var(--border);
             border-radius: var(--radius);
             background: var(--bg-card);
         }
         .auth-tabs {
             display: flex;
-            margin-bottom: 36px;
+            margin-bottom: 24px;
         }
         .auth-tab {
             flex: 1;
@@ -175,8 +175,8 @@
             background: var(--bg-elevated);
             border: 1px solid var(--border);
             border-radius: var(--radius);
-            padding: 20px 24px;
-            margin-bottom: 24px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
             text-align: center;
         }
         .captcha-q {
@@ -917,10 +917,7 @@
             clearSession();
         }
 
-        var savedKey = localStorage.getItem(LS_KEY);
-        if (savedKey) {
-            showView('dashboard');
-        }
+
     });
 </script>
 </body>
