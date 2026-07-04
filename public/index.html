@@ -29,16 +29,20 @@
         #view-home.visible { display: flex; }
         .product-side {
             position: fixed;
-            left: -30px;
+            left: -80px;
             top: 50%;
             transform: translateY(-50%);
-            width: 44vw;
-            max-width: 850px;
+            width: 48vw;
+            max-width: 900px;
             text-align: center;
             pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0;
         }
         .product-side img { width: 100%; height: auto; display: block; }
-        .product-label { font-size: 13px; letter-spacing: 4px; text-transform: uppercase; color: var(--text-dim); font-weight: 300; margin-bottom: 4px; }
+        .product-label { font-size: 13px; letter-spacing: 4px; text-transform: uppercase; color: var(--text-dim); font-weight: 300; }
 
         .home-logo {
             font-size: clamp(72px, 14vw, 160px);
@@ -385,7 +389,7 @@
         }
     </style>
 </head>
-<body style="display:flex;flex-direction:column;">
+<body style="display:flex;flex-direction:column;margin:0;">
 
 <nav id="main-nav">
     <a data-nav="home" class="active" onclick="showView('home')">home</a>
