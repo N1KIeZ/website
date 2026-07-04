@@ -253,11 +253,7 @@ def redeem_key(key):
             save_keys(keys_data)
             return {"success": True, "message": "Key redeemed"}
 
-    # Valid signature but not in DB — activate it
-    entry = {"key": key, "activated_at": datetime.now().isoformat(), "redeemed": True}
-    keys_data["used"].append(entry)
-    save_keys(keys_data)
-    return {"success": True, "message": "Key redeemed"}
+    return {"success": False, "message": "Key not found in database"}
 
 
 def get_all_keys():

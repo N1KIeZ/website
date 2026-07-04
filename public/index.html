@@ -624,18 +624,10 @@
         return DURATION_SECONDS[c.charAt(9)] !== undefined ? DURATION_SECONDS[c.charAt(9)] : null;
     }
 
-    /* ===== STORAGE ===== */
-    var LS_ACCOUNTS = 'ng_accounts';
-    var LS_SESSION = 'ng_session';
-    var LS_KEY = 'license_key';
-    var LS_STATUS = 'license_status';
-    var CURRENT_USER = null;
-
-    function getAccounts() { try { return JSON.parse(localStorage.getItem(LS_ACCOUNTS) || '{}'); } catch(e) { return {}; } }
-    function saveAccount(u, e, p, k) { var a = getAccounts(); a[u.toLowerCase()] = {username:u, email:e, password:p, key:k, joined:Date.now()}; localStorage.setItem(LS_ACCOUNTS, JSON.stringify(a)); }
-    function findAccount(u, p) { var a = getAccounts(); var e = a[u.toLowerCase()]; return (e && e.password === p) ? e : null; }
-    function setSession(u) { CURRENT_USER = u; localStorage.setItem(LS_SESSION, u); }
-    function clearSession() { CURRENT_USER = null; localStorage.removeItem(LS_SESSION); }
+    /* ===== SESSION ===== */
+    var LS_TOKEN = 'ng_token';
+    var CURRENT_TOKEN = null;
+    var CURRENT_USER_DATA = null;
 
     /* ===== VIEWS ===== */
     var currentView = 'home';
@@ -710,6 +702,15 @@
     }
 
     /* ===== AUTH ===== */
+    async function apiPost(path, body) {
+        var headers = { 'Content-Type': 'application/json' };
+        if (CURRENT_TOKEN) headers['Authorization'] = 'Bearer ' + CURRENT_TOKEN;
+        var res = await fetch(path, { method: 'POST', headers: headers, body: JSON.stringify(body) });
+        var data = await res.json();
+        if (!res.ok) throw new Error(data.detail || 'Request failed');
+        return data;
+    }
+
     async function doRegister(e) {
         e.preventDefault();
         var err = document.getElementById('err-register');
@@ -719,34 +720,35 @@
         err.textContent = '';
         if (!user || !pass || !key) { err.textContent = 'fill all fields'; return false; }
         if (!isValidKey(key)) { err.textContent = 'invalid license key'; return false; }
-        var accounts = getAccounts();
-        if (accounts[user.toLowerCase()]) { err.textContent = 'username taken'; return false; }
         try {
-            var result = await KeySystem.redeemKey(key);
-            if (!result.success) { err.textContent = result.message; return false; }
-        } catch(e) { err.textContent = 'server unreachable'; return false; }
-        saveAccount(user, '', pass, key);
-        setSession(user);
-        enterDashboard(user, key);
+            var data = await apiPost('/api/register', { username: user, password: pass, key: key });
+            CURRENT_TOKEN = data.token;
+            CURRENT_USER_DATA = data.user;
+            localStorage.setItem(LS_TOKEN, CURRENT_TOKEN);
+        } catch(e) { err.textContent = e.message; return false; }
+        enterDashboard();
         return false;
     }
 
-    function doLogin(e) {
+    async function doLogin(e) {
         e.preventDefault();
         var err = document.getElementById('err-login');
         var user = document.getElementById('log-user').value.trim();
         var pass = document.getElementById('log-pass').value;
         err.textContent = '';
         if (!user || !pass) { err.textContent = 'fill all fields'; return false; }
-        var account = findAccount(user, pass);
-        if (!account) { err.textContent = 'invalid credentials'; return false; }
-        setSession(user);
-        enterDashboard(user, account.key);
+        try {
+            var data = await apiPost('/api/login', { username: user, password: pass });
+            CURRENT_TOKEN = data.token;
+            CURRENT_USER_DATA = data.user;
+            localStorage.setItem(LS_TOKEN, CURRENT_TOKEN);
+        } catch(e) { err.textContent = e.message; return false; }
+        enterDashboard();
         return false;
     }
 
-    function enterDashboard(user, key) {
-        document.getElementById('dash-user').textContent = user;
+    function enterDashboard() {
+        document.getElementById('dash-user').textContent = CURRENT_USER_DATA.username;
         showLoader([
             [300, '30%', 'authenticating...'],
             [900, '65%', 'loading dashboard...'],
@@ -754,7 +756,6 @@
         ], 'dashboard', function() {
             document.getElementById('main-nav').style.display = 'none';
         });
-        localStorage.setItem(LS_KEY, key);
     }
 
     function doLogout() {
@@ -763,11 +764,12 @@
             [250, '45%', 'signing out...'],
             [800, '100%', '<span style="color:var(--turquoise)">session closed</span>']
         ], 'home', function() {
-            clearSession();
+            CURRENT_TOKEN = null;
+            CURRENT_USER_DATA = null;
+            localStorage.removeItem(LS_TOKEN);
             document.getElementById('main-nav').style.display = '';
             document.getElementById('form-login').reset();
             document.getElementById('form-register').reset();
-            newCaptcha('register'); newCaptcha('login');
         });
     }
 
@@ -777,66 +779,48 @@
             [300, '50%', 'revoking access...'],
             [800, '100%', '<span style="color:#ff6a7a">access denied</span>']
         ], 'home', function() {
-            clearSession();
+            CURRENT_TOKEN = null;
+            CURRENT_USER_DATA = null;
+            localStorage.removeItem(LS_TOKEN);
             document.getElementById('main-nav').style.display = '';
         });
     }
 
     /* ===== DASHBOARD ===== */
     function loadDashboard() {
-        var key = localStorage.getItem(LS_KEY);
-        var status = localStorage.getItem(LS_STATUS);
-        var data = null;
-        try { data = JSON.parse(status); } catch(e) {}
+        if (!CURRENT_USER_DATA) return;
+        var key = CURRENT_USER_DATA.key;
+        document.getElementById('dash-key-display').textContent = key;
+        var dur = getKeyDuration(key);
+        var planText = 'lifetime';
+        if (dur !== null) {
+            planText = dur === 7*24*60*60 ? '1 week' : dur === 30*24*60*60 ? '1 month' : 'custom';
+        }
+        document.getElementById('dash-license-plan').textContent = planText;
+        document.getElementById('dash-valid-display').textContent = 'yes';
 
-        if (key) {
-            document.getElementById('dash-key-display').textContent = key;
-            var dur = getKeyDuration(key);
-            var planText = 'lifetime';
-            if (dur !== null) {
-                planText = dur === 7*24*60*60 ? '1 week' : dur === 30*24*60*60 ? '1 month' : 'custom';
-            }
-            document.getElementById('dash-license-plan').textContent = planText;
+        if (CURRENT_USER_DATA.joined) {
+            document.getElementById('dash-activated-date').textContent = new Date(CURRENT_USER_DATA.joined).toLocaleDateString();
+            document.getElementById('dash-activity-time').textContent = new Date(CURRENT_USER_DATA.joined).toLocaleString();
+        }
 
-            if (data && data.valid && data.key && data.key.activated_at) {
-                var activated = new Date(data.key.activated_at).getTime();
-                document.getElementById('dash-activated-date').textContent = new Date(data.key.activated_at).toLocaleDateString();
-                document.getElementById('dash-valid-display').textContent = 'yes';
-                document.getElementById('dash-activity-time').textContent = new Date(data.key.activated_at).toLocaleString();
-
-                if (dur !== null) {
-                    var expiresAt = activated + (dur * 1000);
-                    var now = Date.now();
-                    var remaining = expiresAt - now;
-                    if (remaining > 0) {
-                        var days = Math.floor(remaining / (24*60*60*1000));
-                        var hours = Math.floor((remaining % (24*60*60*1000)) / (60*60*1000));
-                        var text = '';
-                        if (days > 0) text = days + ' day' + (days > 1 ? 's' : '') + ' remaining';
-                        else if (hours > 0) text = hours + ' hour' + (hours > 1 ? 's' : '') + ' remaining';
-                        else text = 'expiring soon';
-                        document.getElementById('dash-license-remaining').textContent = text;
-                        document.getElementById('dash-license-remaining').className = days < 3 ? 'warn' : 'ok';
-                    } else {
-                        document.getElementById('dash-license-remaining').textContent = 'expired';
-                        document.getElementById('dash-license-remaining').className = 'warn';
-                    }
-                } else {
-                    document.getElementById('dash-license-remaining').textContent = 'lifetime';
-                    document.getElementById('dash-license-remaining').className = 'ok';
-                }
+        if (dur !== null) {
+            var activated = new Date(CURRENT_USER_DATA.joined).getTime();
+            var expiresAt = activated + (dur * 1000);
+            var now = Date.now();
+            var remaining = expiresAt - now;
+            if (remaining > 0) {
+                var days = Math.floor(remaining / (24*60*60*1000));
+                var text = days > 0 ? days + ' day' + (days > 1 ? 's' : '') + ' remaining' : 'expiring soon';
+                document.getElementById('dash-license-remaining').textContent = text;
+                document.getElementById('dash-license-remaining').className = days < 3 ? 'warn' : 'ok';
             } else {
-                document.getElementById('dash-activated-date').textContent = '-';
-                document.getElementById('dash-valid-display').textContent = 'yes';
-                document.getElementById('dash-license-remaining').textContent = 'active';
+                document.getElementById('dash-license-remaining').textContent = 'expired';
+                document.getElementById('dash-license-remaining').className = 'warn';
             }
         } else {
-            document.getElementById('dash-key-display').textContent = 'No license';
-            document.getElementById('dash-license-plan').textContent = '-';
-            document.getElementById('dash-license-remaining').textContent = 'inactive';
-            document.getElementById('dash-license-remaining').className = 'warn';
-            document.getElementById('dash-activated-date').textContent = '-';
-            document.getElementById('dash-valid-display').textContent = '-';
+            document.getElementById('dash-license-remaining').textContent = 'lifetime';
+            document.getElementById('dash-license-remaining').className = 'ok';
         }
     }
 
@@ -858,18 +842,12 @@
     function startBanPolling() {
         if (banCheckInterval) clearInterval(banCheckInterval);
         banCheckInterval = setInterval(function() {
-            if (!CURRENT_USER) return;
-            var accounts = getAccounts();
-            var acc = accounts[CURRENT_USER.toLowerCase()];
-            if (acc && acc.key) {
-                var key = acc.key.trim().toUpperCase().replace(/-/g, '');
-                // check via server validation
-                KeySystem.validateKey(acc.key, null).then(function(r) {
-                    if (!r.valid && r.message === 'Key is banned') {
-                        showBanScreen(acc.key);
-                    }
-                }).catch(function() {});
-            }
+            if (!CURRENT_USER_DATA) return;
+            KeySystem.validateKey(CURRENT_USER_DATA.key, null).then(function(r) {
+                if (!r.valid && r.message === 'Key is banned') {
+                    showBanScreen(CURRENT_USER_DATA.key);
+                }
+            }).catch(function() {});
         }, 30000);
     }
 
@@ -883,22 +861,23 @@
 
     /* ===== INIT ===== */
     document.addEventListener('DOMContentLoaded', function() {
-        var session = localStorage.getItem(LS_SESSION);
-        if (session) {
-            var accounts = getAccounts();
-            var acc = accounts[session.toLowerCase()];
-            if (acc) {
-                CURRENT_USER = session;
-                document.getElementById('dash-user').textContent = session;
-                document.getElementById('main-nav').style.display = 'none';
-                showView('dashboard');
-                startBanPolling();
-                return;
-            }
-            clearSession();
+        var token = localStorage.getItem(LS_TOKEN);
+        if (token) {
+            CURRENT_TOKEN = token;
+            fetch('/api/session', { headers: { 'Authorization': 'Bearer ' + token } })
+                .then(function(r) { if (!r.ok) throw new Error(); return r.json(); })
+                .then(function(data) {
+                    CURRENT_USER_DATA = data.user;
+                    document.getElementById('dash-user').textContent = data.user.username;
+                    document.getElementById('main-nav').style.display = 'none';
+                    showView('dashboard');
+                    startBanPolling();
+                })
+                .catch(function() {
+                    localStorage.removeItem(LS_TOKEN);
+                    CURRENT_TOKEN = null;
+                });
         }
-
-
     });
 </script>
 </body>
