@@ -17,23 +17,21 @@
 
         #view-home {
             display: flex;
-            position: relative;
             align-items: center;
             justify-content: center;
             flex: 1;
             min-height: calc(100vh - 120px);
-            text-align: center;
+            gap: 80px;
+            padding: 40px;
         }
         #view-home.visible { display: flex; }
-        #view-home::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: url('product-box.png') center/contain no-repeat;
-            opacity: 0.1;
-            pointer-events: none;
-            z-index: -1;
+        @media (max-width: 800px) {
+            #view-home { flex-direction: column; gap: 40px; }
         }
+        .product-side { flex: 0 1 500px; text-align: center; }
+        .product-side img { max-width: 100%; height: auto; }
+        .product-label { font-size: 13px; letter-spacing: 4px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 16px; font-weight: 300; }
+        .home-content { flex: 0 1 auto; text-align: center; }
 
         .home-logo {
             font-size: clamp(72px, 14vw, 160px);
@@ -390,7 +388,11 @@
 
     <!-- HOME -->
     <div id="view-home" class="view visible">
-        <div>
+        <div class="product-side">
+            <div class="product-label">our products</div>
+            <img src="product-box.png" alt="Product">
+        </div>
+        <div class="home-content">
             <div class="home-logo">nikita<span class="gg-badge">.gg</span></div>
             <p class="home-tagline">premium software, verified licenses</p>
             <div class="home-actions">
