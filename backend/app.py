@@ -13,20 +13,26 @@ from pydantic import BaseModel
 from typing import Optional
 
 from backend.key_system import (
-    validate_key, ban_key, unban_key, get_stock, get_all_keys, is_valid_key,
+    validate_key, ban_key, unban_key, get_stock, get_all_keys,
     generate_keys as gen_keys, redeem_key
 )
 from backend.database import create_user, verify_user, get_user, init_db, get_db
 
+from slowapi import Limiter
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
+from starlette.requests import Request
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 PUBLIC_DIR = BASE_DIR / "public"
-ADMIN_KEY = "admin123"
+ADMIN_KEY = os.environ.get("ADMIN_KEY", secrets.token_urlsafe(32))
 
 USERS_FILE = BASE_DIR / "users.json"
 JWT_SECRET = os.environ.get("JWT_SECRET", secrets.token_hex(32))
 JWT_ALGO = "HS256"
 JWT_EXPIRY_HOURS = 72
 
+limiter = Limiter(key_func=get_remote_address)
 app = FastAPI(title="License Key API", version="2.0.0")
 
 app.add_middleware(
@@ -36,6 +42,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.exception_handler(RateLimitExceeded)
+async def rate_limit_handler(request: Request, exc: RateLimitExceeded):
+    return JSONResponse(status_code=429, content={"success": False, "message": "Rate limit exceeded. Try again later."})
 
 
 # ─── Migrate existing JSON users to SQLite ──────────────────────
@@ -157,7 +168,8 @@ class LoginKeyRequest(BaseModel):
 
 # ─── Auth endpoints ─────────────────────────────────────────────
 @app.post("/api/register")
-async def api_register(req: RegisterRequest):
+@limiter.limit("5/minute")
+async def api_register(req: RegisterRequest, request: Request):
     user = req.username.strip().lower()
     if not user or len(user) < 2:
         raise HTTPException(status_code=400, detail="Username must be at least 2 characters")
@@ -194,7 +206,8 @@ async def api_register(req: RegisterRequest):
 
 
 @app.post("/api/login")
-async def api_login(req: LoginRequest):
+@limiter.limit("10/minute")
+async def api_login(req: LoginRequest, request: Request):
     """Login with username and password (SQLite database with bcrypt)"""
     username = req.username.strip().lower()
     result = verify_user(username, req.password.strip(), req.hwid)
@@ -216,7 +229,8 @@ async def api_login(req: LoginRequest):
 
 
 @app.post("/api/login-key")
-async def api_login_key(req: LoginKeyRequest):
+@limiter.limit("10/minute")
+async def api_login_key(req: LoginKeyRequest, request: Request):
     """Login with username and license key (for loader)"""
     user = req.username.strip().lower()
     key = req.key.strip().upper()
@@ -287,11 +301,6 @@ async def api_unban(req: BanRequest, admin: bool = Depends(verify_admin)):
 async def api_redeem(req: ValidateRequest):
     return redeem_key(req.key)
 
-
-@app.post("/api/check")
-async def api_check(req: ValidateRequest):
-    valid = is_valid_key(req.key)
-    return {"valid": valid, "message": "Key format valid" if valid else "Invalid key format"}
 
 
 @app.get("/api/health")

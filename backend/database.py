@@ -106,6 +106,13 @@ def verify_user(username, password, hwid=None):
         except:
             pass
 
+    # HWID lock: if user already has an HWID, it must match
+    if user['hwid']:
+        if not hwid:
+            return {'success': False, 'message': 'This account is locked to a specific PC. HWID required.'}
+        if user['hwid'] != hwid:
+            return {'success': False, 'message': 'This account is locked to another PC. HWID mismatch.'}
+
     # Check password with bcrypt
     try:
         if not bcrypt.checkpw(password.encode('utf-8'), user['password'].encode('utf-8')):
@@ -113,7 +120,7 @@ def verify_user(username, password, hwid=None):
     except Exception:
         return {'success': False, 'message': 'Invalid username or password'}
 
-    # Update HWID and last login
+    # Update HWID and last login (first time binding or same HWID)
     if hwid:
         update_hwid(username, hwid)
 

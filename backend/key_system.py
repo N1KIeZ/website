@@ -1,86 +1,36 @@
 import json
 import os
 import secrets
-import time
 from datetime import datetime
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 KEYS_FILE = BASE_DIR / "keys.json"
 BANNED_FILE = BASE_DIR / "banned.json"
-KEYS_DB_FILE = BASE_DIR / "keys_db.json"
-BANNED_KEYS_FILE = BASE_DIR / "banned_keys.json"
-
-_CH = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
-PUBLIC_N = 59596791868544965917715049293139712060670803368525004046780554740535049298561
-PUBLIC_E = 65537
 
 
-def b32_decode(s):
-    bits = ""
-    for ch in s:
-        val = _CH.find(ch)
-        if val == -1:
-            return None
-        bits += f"{val:05b}"
-    bytes_out = []
-    for i in range(0, len(bits), 8):
-        if i + 8 <= len(bits):
-            bytes_out.append(int(bits[i:i+8], 2))
-    return bytes_out
+def _format_key(raw: str) -> str:
+    """XXXX-XXXXXXXX-XXXXXXXX-XXXXXXXX"""
+    return f"{raw[:4]}-{raw[4:12]}-{raw[12:20]}-{raw[20:28]}"
 
 
-def bytes_to_int(b):
-    return int.from_bytes(b, byteorder='big')
-
-
-def _h(s):
-    h = 0
-    for c in s:
-        h = ((h * 31) + ord(c)) & 0xFFFFFFFFFFFFFFFF
-    return h
-
-
-def is_valid_key(key):
-    if not key:
-        return False
-    clean = key.strip().upper().replace('-', '')
-    if len(clean) < 15:
-        return False
-    payload = clean[:10]
-    sig_str = clean[10:]
-    sig_bytes = b32_decode(sig_str)
-    if sig_bytes is None:
-        return False
-    sig = bytes_to_int(sig_bytes)
-    decrypted = pow(sig, PUBLIC_E, PUBLIC_N)
-    expected = _h(payload)
-    return decrypted == expected
-
-
-def _migrate_keys(data):
-    if "available" in data and "used" in data:
-        return data
-    if "keys" in data:
-        return {"available": [{"key": k} for k in data["keys"]], "used": []}
-    if "active" in data:
-        return {
-            "available": [],
-            "used": [k if isinstance(k, dict) else {"key": k} for k in data["active"]]
-        }
-    return {"available": [], "used": []}
+def _key_exists(key: str, keys_data: dict) -> bool:
+    for k in keys_data.get("available", []):
+        if k["key"] == key:
+            return True
+    for k in keys_data.get("used", []):
+        if k["key"] == key:
+            return True
+    return False
 
 
 def load_keys():
     if KEYS_FILE.exists():
         with open(KEYS_FILE, 'r') as f:
-            return _migrate_keys(json.load(f))
-    if KEYS_DB_FILE.exists():
-        with open(KEYS_DB_FILE, 'r') as f:
             data = json.load(f)
-            migrated = _migrate_keys(data)
-            save_keys(migrated)
-            return migrated
+        if "available" not in data:
+            data = {"available": [], "used": []}
+        return data
     return {"available": [], "used": []}
 
 
@@ -97,19 +47,6 @@ def load_banned():
                 return data
             if isinstance(data, dict) and "banned" in data:
                 return data["banned"]
-            return []
-    if BANNED_KEYS_FILE.exists():
-        with open(BANNED_KEYS_FILE, 'r') as f:
-            data = json.load(f)
-            if isinstance(data, dict) and "banned" in data:
-                return data["banned"]
-    if KEYS_DB_FILE.exists():
-        with open(KEYS_DB_FILE, 'r') as f:
-            data = json.load(f)
-            if "banned" in data:
-                banned = [k["key"] if isinstance(k, dict) else k for k in data["banned"]]
-                save_banned(banned)
-                return banned
     return []
 
 
@@ -118,14 +55,36 @@ def save_banned(data):
         json.dump(data, f, indent=2)
 
 
+def generate_keys(amount):
+    keys_data = load_keys()
+    new_keys = []
+
+    existing = set()
+    for k in keys_data["available"]:
+        existing.add(k["key"])
+    for k in keys_data["used"]:
+        existing.add(k["key"])
+    for k in load_banned():
+        existing.add(k)
+
+    while len(new_keys) < amount:
+        raw = secrets.token_hex(16).upper()
+        formatted = _format_key(raw)
+        if formatted not in existing:
+            existing.add(formatted)
+            entry = {"key": formatted, "created": datetime.now().isoformat()}
+            keys_data["available"].append(entry)
+            new_keys.append(entry)
+
+    save_keys(keys_data)
+    return new_keys
+
+
 def validate_key(key, hwid=None):
     key = key.strip().upper()
     banned = load_banned()
     if key in banned:
         return {"valid": False, "message": "Key is banned"}
-
-    if not is_valid_key(key):
-        return {"valid": False, "message": "Invalid key signature"}
 
     keys_data = load_keys()
 
@@ -144,11 +103,30 @@ def validate_key(key, hwid=None):
                 return {"valid": False, "message": "Key locked to another device"}
             return {"valid": True, "message": "Key already active", "key": k}
 
-    # Key has valid signature but isn't in DB — activate on the fly
-    entry = {"key": key, "hwid": hwid, "activated_at": datetime.now().isoformat()}
-    keys_data["used"].append(entry)
-    save_keys(keys_data)
-    return {"valid": True, "message": "Key activated", "key": entry}
+    return {"valid": False, "message": "Key not found"}
+
+
+def redeem_key(key):
+    key = key.strip().upper()
+    banned = load_banned()
+    if key in banned:
+        return {"success": False, "message": "Key is banned"}
+
+    keys_data = load_keys()
+
+    for k in keys_data["used"]:
+        if k["key"] == key:
+            return {"success": False, "message": "Key already redeemed"}
+
+    for i, k in enumerate(keys_data["available"]):
+        if k["key"] == key:
+            entry = {**k, "activated_at": datetime.now().isoformat(), "redeemed": True}
+            keys_data["used"].append(entry)
+            del keys_data["available"][i]
+            save_keys(keys_data)
+            return {"success": True, "message": "Key redeemed"}
+
+    return {"success": False, "message": "Key not found"}
 
 
 def ban_key(key):
@@ -183,81 +161,6 @@ def get_stock():
         "used": len(keys_data["used"]),
         "banned": len(banned)
     }
-
-
-def generate_keys(amount):
-    keys_data = load_keys()
-    new_keys = []
-
-    STATIC_D = 44411372526603278231981439147021640563272121446936530565914521287135611291649
-    STATIC_N = 59596791868544965917715049293139712060670803368525004046780554740535049298561
-    prefix_chars = _CH[:-3]
-
-    def b32_encode(data):
-        bits = "".join(f"{b:08b}" for b in data)
-        padding = (5 - len(bits) % 5) % 5
-        bits += "0" * padding
-        return "".join(_CH[int(bits[i:i+5], 2)] for i in range(0, len(bits), 5))
-
-    existing = set()
-    for k in keys_data["available"]:
-        existing.add(k["key"])
-    for k in keys_data["used"]:
-        existing.add(k["key"])
-    for k in load_banned():
-        existing.add(k)
-
-    while len(new_keys) < amount:
-        prefix = "".join(secrets.choice(prefix_chars) for _ in range(9))
-        payload = prefix + "L"
-        h = _h(payload)
-        sig = pow(h, STATIC_D, STATIC_N)
-        sig_bytes = sig.to_bytes((sig.bit_length() + 7) // 8, byteorder='big')
-        sig_b32 = b32_encode(sig_bytes)
-        raw_key = payload + sig_b32
-        formatted_key = "-".join(raw_key[i:i+5] for i in range(0, len(raw_key), 5))
-
-        if formatted_key not in existing:
-            existing.add(formatted_key)
-            entry = {"key": formatted_key, "created": datetime.now().isoformat()}
-            keys_data["available"].append(entry)
-            new_keys.append(entry)
-
-    save_keys(keys_data)
-    return new_keys
-
-
-def redeem_key(key):
-    """Redeem a key for registration. Only works if key is available (not yet used)."""
-    key = key.strip().upper()
-    banned = load_banned()
-    if key in banned:
-        return {"success": False, "message": "Key is banned"}
-
-    if not is_valid_key(key):
-        return {"success": False, "message": "Invalid key signature"}
-
-    keys_data = load_keys()
-
-    # Check if already used
-    for k in keys_data["used"]:
-        if k["key"] == key:
-            return {"success": False, "message": "Key already redeemed"}
-
-    # Find and consume from available
-    for i, k in enumerate(keys_data["available"]):
-        if k["key"] == key:
-            entry = {**k, "activated_at": datetime.now().isoformat(), "redeemed": True}
-            keys_data["used"].append(entry)
-            del keys_data["available"][i]
-            save_keys(keys_data)
-            return {"success": True, "message": "Key redeemed"}
-
-    # Valid signature but not in DB — activate it (for EXE-generated keys)
-    entry = {"key": key, "activated_at": datetime.now().isoformat(), "redeemed": True}
-    keys_data["used"].append(entry)
-    save_keys(keys_data)
-    return {"success": True, "message": "Key redeemed"}
 
 
 def get_all_keys():

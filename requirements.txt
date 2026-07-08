@@ -4,3 +4,4 @@ pydantic>=2.5.0
 gunicorn>=21.2.0
 bcrypt>=4.1.0
 pyjwt>=2.8.0
+slowapi>=0.1.9
