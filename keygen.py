@@ -55,6 +55,8 @@ def main():
         for k in keys:
             print(k)
 
+    input("\nPress Enter to exit...")
+
 
 if __name__ == "__main__":
     main()
