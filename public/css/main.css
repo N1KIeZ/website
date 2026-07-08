@@ -1,0 +1,218 @@
+/* Main Cheat Menu for nikita.gg */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+    background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #16213e 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+}
+
+body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 20% 30%, rgba(108, 92, 231, 0.15) 0%, transparent 40%),
+        radial-gradient(circle at 80% 70%, rgba(79, 172, 254, 0.1) 0%, transparent 40%);
+    z-index: 0;
+}
+
+.cheat-container {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 700px;
+    padding: 20px;
+}
+
+.cheat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding: 20px 24px;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.lock-icon {
+    font-size: 24px;
+    color: #6c5ce7;
+}
+
+.brand-name {
+    font-size: 24px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #6c5ce7 0%, #4facfe 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #a0a0b0;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.user-info:hover {
+    color: #6c5ce7;
+}
+
+.cheat-content {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 32px;
+}
+
+.status-card {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 32px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 10px;
+}
+
+.status-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #a0a0b0;
+    font-size: 14px;
+}
+
+.status-item i {
+    color: #6c5ce7;
+}
+
+.status-item strong {
+    color: #00ff88;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.feature-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.feature-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(108, 92, 231, 0.3);
+    box-shadow: 0 10px 30px rgba(108, 92, 231, 0.15);
+}
+
+.feature-card i {
+    font-size: 32px;
+    color: #6c5ce7;
+    margin-bottom: 12px;
+}
+
+.feature-card h3 {
+    font-size: 16px;
+    color: #ffffff;
+    margin-bottom: 8px;
+}
+
+.feature-card p {
+    font-size: 12px;
+    color: #8a8a9a;
+    line-height: 1.4;
+}
+
+.actions {
+    display: flex;
+    gap: 16px;
+}
+
+.inject-btn,
+.logout-btn {
+    flex: 1;
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.inject-btn {
+    background: linear-gradient(135deg, #6c5ce7 0%, #4facfe 100%);
+    color: #ffffff;
+}
+
+.inject-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(108, 92, 231, 0.4);
+}
+
+.logout-btn {
+    background: rgba(255, 255, 255, 0.05);
+    color: #a0a0b0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.logout-btn:hover {
+    background: rgba(255, 107, 107, 0.1);
+    color: #ff6b6b;
+    border-color: rgba(255, 107, 107, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .cheat-content {
+        padding: 24px;
+    }
+
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .status-card {
+        flex-direction: column;
+        gap: 12px;
+    }
+}

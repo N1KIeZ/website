@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>nikita.gg - Login</title>
+    <link rel="stylesheet" href="css/login.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+    <div class="loader" id="loader">
+        <div class="loader-bar">
+            <div class="loader-bar-fill" id="loaderBar"></div>
+        </div>
+        <div class="loader-status" id="loaderStatus">Initializing...</div>
+    </div>
+
+    <div class="login-container" id="loginContainer">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="brand">
+                    <i class="fas fa-lock lock-icon"></i>
+                    <span class="brand-name">nikita.gg</span>
+                </div>
+                <p class="subtitle">Thank you for choosing us<br>Sign in to continue to nikita.gg</p>
+            </div>
+
+            <form class="login-form" id="loginForm">
+                <div class="input-group">
+                    <label for="username">Username</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-user input-icon"></i>
+                        <input type="text" id="username" name="username" placeholder="Enter your username"
+                            autocomplete="username" required>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-key input-icon"></i>
+                        <input type="password" id="password" name="password" placeholder="Enter password"
+                            autocomplete="off" required>
+                        <i class="fas fa-eye toggle-password" id="togglePassword"></i>
+                    </div>
+                </div>
+
+                <div class="error-message" id="errorMessage"></div>
+
+                <button type="submit" class="continue-btn" id="continueBtn">
+                    <span>Continue</span>
+                </button>
+            </form>
+
+            <div class="login-footer">
+                <a href="#" class="forgot-password">Forgot password?</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/login.js"></script>
+</body>
+
+</html>

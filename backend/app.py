@@ -16,6 +16,7 @@ from backend.key_system import (
     validate_key, ban_key, unban_key, get_stock, get_all_keys, is_valid_key,
     generate_keys as gen_keys, redeem_key
 )
+from backend.database import create_user, verify_user, get_user, init_db, get_db
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 PUBLIC_DIR = BASE_DIR / "public"
@@ -37,7 +38,44 @@ app.add_middleware(
 )
 
 
-# ─── User storage ───────────────────────────────────────────────
+# ─── Migrate existing JSON users to SQLite ──────────────────────
+def migrate_json_users():
+    if not USERS_FILE.exists():
+        return
+    try:
+        with open(USERS_FILE) as f:
+            json_users = json.load(f)
+    except (json.JSONDecodeError, IOError):
+        return
+
+    conn = get_db()
+    cursor = conn.cursor()
+    migrated = 0
+    for username, data in json_users.items():
+        if get_user(username):
+            continue
+        password = data.get("password", "")
+        email = data.get("email", "")
+        key = data.get("key", "")
+        joined = data.get("joined", datetime.now(timezone.utc).isoformat())
+        try:
+            cursor.execute(
+                'INSERT INTO users (username, password, email, created_at) VALUES (?, ?, ?, ?)',
+                (username, password, email, joined)
+            )
+            migrated += 1
+        except sqlite3.IntegrityError:
+            pass
+    conn.commit()
+    conn.close()
+    if migrated > 0:
+        print(f"Migrated {migrated} users from users.json to SQLite")
+
+import sqlite3
+migrate_json_users()
+
+
+# ─── User storage (JSON fallback) ───────────────────────────────
 def load_users():
     if USERS_FILE.exists():
         with open(USERS_FILE) as f:
@@ -83,9 +121,6 @@ def get_current_user(authorization: Optional[str] = Header(None)):
     username = verify_token(token)
     if not username:
         raise HTTPException(status_code=401, detail="Invalid or expired token")
-    users = load_users()
-    if username not in users:
-        raise HTTPException(status_code=401, detail="User not found")
     return username
 
 
@@ -112,6 +147,12 @@ class RegisterRequest(BaseModel):
 class LoginRequest(BaseModel):
     username: str
     password: str
+    hwid: Optional[str] = None
+
+
+class LoginKeyRequest(BaseModel):
+    username: str
+    key: str
 
 
 # ─── Auth endpoints ─────────────────────────────────────────────
@@ -123,8 +164,8 @@ async def api_register(req: RegisterRequest):
     if len(req.password) < 4:
         raise HTTPException(status_code=400, detail="Password must be at least 4 characters")
 
-    users = load_users()
-    if user in users:
+    # Check if user exists in SQLite
+    if get_user(user):
         raise HTTPException(status_code=409, detail="Username already taken")
 
     # Redeem the key on the server (one-time check)
@@ -132,6 +173,13 @@ async def api_register(req: RegisterRequest):
     if not result["success"]:
         raise HTTPException(status_code=400, detail=result["message"])
 
+    # Create user in SQLite with bcrypt
+    ok = create_user(user, req.password.strip())
+    if not ok:
+        raise HTTPException(status_code=500, detail="Failed to create user")
+
+    # Also save to JSON for backward compatibility
+    users = load_users()
     hashed = bcrypt.hashpw(req.password.encode(), bcrypt.gensalt()).decode()
     users[user] = {
         "username": req.username.strip(),
@@ -142,27 +190,60 @@ async def api_register(req: RegisterRequest):
     save_users(users)
 
     token = create_token(user)
-    return {"success": True, "token": token, "user": users[user]}
+    return {"success": True, "token": token, "user": {"username": user, "created_at": datetime.now(timezone.utc).isoformat()}}
 
 
 @app.post("/api/login")
 async def api_login(req: LoginRequest):
+    """Login with username and password (SQLite database with bcrypt)"""
+    username = req.username.strip().lower()
+    result = verify_user(username, req.password.strip(), req.hwid)
+    if result["success"]:
+        token = create_token(username)
+        user_data = result.get("user", {})
+        return {
+            "success": True,
+            "token": token,
+            "user": {
+                "username": user_data.get("username", username),
+                "email": user_data.get("email", ""),
+                "subscription_expiry": user_data.get("subscription_expiry", ""),
+                "created_at": user_data.get("created_at", ""),
+                "is_banned": user_data.get("is_banned", 0)
+            }
+        }
+    return result
+
+
+@app.post("/api/login-key")
+async def api_login_key(req: LoginKeyRequest):
+    """Login with username and license key (for loader)"""
     user = req.username.strip().lower()
+    key = req.key.strip().upper()
+
+    # Validate the key
+    result = validate_key(key)
+    if not result.get("valid"):
+        return {"success": False, "message": result.get("message", "Invalid license key")}
+
+    # Check if user exists in SQLite
+    db_user = get_user(user)
+    if db_user:
+        token = create_token(user)
+        return {"success": True, "token": token, "user": db_user}
+
+    # Fallback to JSON users
     users = load_users()
-    if user not in users:
-        raise HTTPException(status_code=401, detail="Invalid username or password")
+    if user in users:
+        token = create_token(user)
+        return {"success": True, "token": token, "user": users[user]}
 
-    if not bcrypt.checkpw(req.password.encode(), users[user]["password"].encode()):
-        raise HTTPException(status_code=401, detail="Invalid username or password")
-
-    token = create_token(user)
-    return {"success": True, "token": token, "user": users[user]}
+    return {"success": False, "message": "User not found"}
 
 
 @app.get("/api/session")
 async def api_session(username: str = Depends(get_current_user)):
-    users = load_users()
-    return {"success": True, "user": users[username]}
+    return {"success": True, "user": {"username": username}}
 
 
 # ─── Existing endpoints ─────────────────────────────────────────

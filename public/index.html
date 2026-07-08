@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,8 +13,13 @@
             --fuchsia: #d946ef;
         }
 
-        .view { display: none; }
-        .view.visible { display: block; }
+        .view {
+            display: none;
+        }
+
+        .view.visible {
+            display: block;
+        }
 
         #view-home {
             flex-direction: column;
@@ -25,7 +31,11 @@
             padding: 40px;
             gap: 10px;
         }
-        #view-home.visible { display: flex; }
+
+        #view-home.visible {
+            display: flex;
+        }
+
         .product-side {
             position: fixed;
             left: -30px;
@@ -36,7 +46,13 @@
             text-align: center;
             pointer-events: none;
         }
-        .product-side img { width: 100%; height: auto; display: block; }
+
+        .product-side img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
         .product-label {
             font-size: 14px;
             letter-spacing: 6px;
@@ -50,7 +66,7 @@
             position: relative;
             top: 26px;
             z-index: 1;
-            text-shadow: 0 0 20px rgba(168,85,247,0.3);
+            text-shadow: 0 0 20px rgba(168, 85, 247, 0.3);
         }
 
         .home-logo {
@@ -106,6 +122,7 @@
             border-bottom: 1px solid var(--border);
             position: static;
         }
+
         nav a {
             color: var(--text-dim);
             text-decoration: none;
@@ -116,9 +133,15 @@
             padding-bottom: 4px;
             transition: color .2s;
         }
-        nav a:hover, nav a.active { color: var(--text); }
 
-        #view-pricing { padding: 60px 0 40px; }
+        nav a:hover,
+        nav a.active {
+            color: var(--text);
+        }
+
+        #view-pricing {
+            padding: 60px 0 40px;
+        }
 
         .section-title {
             text-align: center;
@@ -148,14 +171,20 @@
             position: relative;
             transition: border-color .2s;
         }
-        .plan:hover { border-color: rgba(168, 85, 247, 0.25); }
+
+        .plan:hover {
+            border-color: rgba(168, 85, 247, 0.25);
+        }
+
         .plan.popular {
             border-color: var(--turquoise);
             box-shadow: 0 0 0 1px rgba(168, 85, 247, 0.15);
         }
+
         .plan .badge {
             position: absolute;
-            top: -12px; left: 50%;
+            top: -12px;
+            left: 50%;
             transform: translateX(-50%);
             background: linear-gradient(135deg, var(--ocean), var(--turquoise));
             color: #fff;
@@ -166,12 +195,43 @@
             border-radius: 4px;
             text-transform: uppercase;
         }
-        .plan h3 { font-size: 22px; font-weight: 300; color: var(--text); margin-bottom: 20px; }
-        .plan .price { font-size: 40px; font-weight: 200; color: var(--turquoise); margin-bottom: 6px; }
-        .plan .period { font-size: 13px; color: var(--text-dim); margin-bottom: 32px; }
-        .plan ul { list-style: none; margin-bottom: 36px; }
-        .plan li { font-size: 14px; color: var(--text-dim); padding: 8px 0; }
-        .plan li::before { content: "\2713"; color: var(--turquoise); margin-right: 10px; }
+
+        .plan h3 {
+            font-size: 22px;
+            font-weight: 300;
+            color: var(--text);
+            margin-bottom: 20px;
+        }
+
+        .plan .price {
+            font-size: 40px;
+            font-weight: 200;
+            color: var(--turquoise);
+            margin-bottom: 6px;
+        }
+
+        .plan .period {
+            font-size: 13px;
+            color: var(--text-dim);
+            margin-bottom: 32px;
+        }
+
+        .plan ul {
+            list-style: none;
+            margin-bottom: 36px;
+        }
+
+        .plan li {
+            font-size: 14px;
+            color: var(--text-dim);
+            padding: 8px 0;
+        }
+
+        .plan li::before {
+            content: "\2713";
+            color: var(--turquoise);
+            margin-right: 10px;
+        }
 
         #view-auth {
             display: flex;
@@ -187,9 +247,30 @@
             pointer-events: none;
             transition: opacity .2s ease, visibility .2s ease;
         }
-        #view-auth.visible { opacity: 1; visibility: visible; pointer-events: auto; }
-        .auth-back { position: absolute; top: 24px; left: 24px; background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 14px; font-family: inherit; transition: color .2s; }
-        .auth-back:hover { color: var(--text); }
+
+        #view-auth.visible {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+
+        .auth-back {
+            position: absolute;
+            top: 24px;
+            left: 24px;
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            cursor: pointer;
+            font-size: 14px;
+            font-family: inherit;
+            transition: color .2s;
+        }
+
+        .auth-back:hover {
+            color: var(--text);
+        }
+
         .auth-box {
             width: 100%;
             max-width: 420px;
@@ -199,10 +280,25 @@
             border-radius: 12px;
             background: var(--bg-card);
         }
-        .auth-box .field { margin-bottom: 18px; }
-        .auth-box .field input { padding: 12px 14px; font-size: 14px; }
-        .auth-box .field-label { margin-bottom: 6px; }
-        .auth-box .field-label label { font-size: 11px; letter-spacing: 1px; }
+
+        .auth-box .field {
+            margin-bottom: 18px;
+        }
+
+        .auth-box .field input {
+            padding: 12px 14px;
+            font-size: 14px;
+        }
+
+        .auth-box .field-label {
+            margin-bottom: 6px;
+        }
+
+        .auth-box .field-label label {
+            font-size: 11px;
+            letter-spacing: 1px;
+        }
+
         .auth-tabs {
             display: flex;
             margin-bottom: 28px;
@@ -210,6 +306,7 @@
             border-radius: 8px;
             padding: 4px;
         }
+
         .auth-tab {
             flex: 1;
             text-align: center;
@@ -223,25 +320,48 @@
             letter-spacing: 1px;
             text-transform: uppercase;
         }
-        .auth-tab.active { color: #fff; background: linear-gradient(135deg, var(--purple-600, #7c3aed), var(--purple-500, #a855f7)); }
 
-        .form-error { color: #ff6a7a; font-size: 13px; text-align: center; margin-bottom: 16px; min-height: 16px; }
-        .auth-box .btn-primary { padding: 14px 0; font-size: 13px; border-radius: 8px; }
+        .auth-tab.active {
+            color: #fff;
+            background: linear-gradient(135deg, var(--purple-600, #7c3aed), var(--purple-500, #a855f7));
+        }
 
-        .dash-wrap { max-width: 960px; margin: 0 auto; padding: 40px 0; }
+        .form-error {
+            color: #ff6a7a;
+            font-size: 13px;
+            text-align: center;
+            margin-bottom: 16px;
+            min-height: 16px;
+        }
+
+        .auth-box .btn-primary {
+            padding: 14px 0;
+            font-size: 13px;
+            border-radius: 8px;
+        }
+
+        .dash-wrap {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 40px 0;
+        }
+
         .dash-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 48px;
         }
+
         .dash-user {
             display: flex;
             align-items: center;
             gap: 16px;
         }
+
         .dash-avatar {
-            width: 42px; height: 42px;
+            width: 42px;
+            height: 42px;
             border-radius: 50%;
             background: linear-gradient(135deg, var(--accent, #a855f7), #d946ef);
             display: flex;
@@ -252,8 +372,18 @@
             color: #fff;
             flex-shrink: 0;
         }
-        .dash-user-info h2 { font-size: 18px; font-weight: 500; margin: 0; }
-        .dash-user-info p { font-size: 13px; color: var(--text-dim); margin: 2px 0 0; }
+
+        .dash-user-info h2 {
+            font-size: 18px;
+            font-weight: 500;
+            margin: 0;
+        }
+
+        .dash-user-info p {
+            font-size: 13px;
+            color: var(--text-dim);
+            margin: 2px 0 0;
+        }
 
         .dash-cards {
             display: grid;
@@ -261,6 +391,7 @@
             gap: 16px;
             margin-bottom: 24px;
         }
+
         .dash-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -268,55 +399,130 @@
             padding: 24px;
             transition: border-color .2s, box-shadow .2s;
         }
-        .dash-card:hover { border-color: rgba(168,85,247,0.25); box-shadow: 0 0 0 1px rgba(168,85,247,0.08); }
+
+        .dash-card:hover {
+            border-color: rgba(168, 85, 247, 0.25);
+            box-shadow: 0 0 0 1px rgba(168, 85, 247, 0.08);
+        }
+
         .dash-card-accent {
-            background: linear-gradient(135deg, rgba(124,58,237,0.1), rgba(168,85,247,0.04));
-            border-color: rgba(168,85,247,0.2);
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(168, 85, 247, 0.04));
+            border-color: rgba(168, 85, 247, 0.2);
         }
+
         .dash-card-label {
-            font-size: 11px; font-weight: 500; letter-spacing: 1.5px;
-            text-transform: uppercase; color: var(--text-dim); margin-bottom: 10px;
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            margin-bottom: 10px;
         }
-        .dash-card-value { font-size: 26px; font-weight: 400; margin-bottom: 4px; }
-        .dash-card-sub { font-size: 13px; color: var(--text-dim); }
-        .dash-card-sub .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
-        .dot-green { background: #22c55e; box-shadow: 0 0 6px rgba(34,197,94,0.3); }
-        .dot-purple { background: var(--accent, #a855f7); box-shadow: 0 0 6px rgba(168,85,247,0.3); }
-        .dot-yellow { background: #eab308; box-shadow: 0 0 6px rgba(234,179,8,0.3); }
+
+        .dash-card-value {
+            font-size: 26px;
+            font-weight: 400;
+            margin-bottom: 4px;
+        }
+
+        .dash-card-sub {
+            font-size: 13px;
+            color: var(--text-dim);
+        }
+
+        .dash-card-sub .dot {
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            margin-right: 6px;
+            vertical-align: middle;
+        }
+
+        .dot-green {
+            background: #22c55e;
+            box-shadow: 0 0 6px rgba(34, 197, 94, 0.3);
+        }
+
+        .dot-purple {
+            background: var(--accent, #a855f7);
+            box-shadow: 0 0 6px rgba(168, 85, 247, 0.3);
+        }
+
+        .dot-yellow {
+            background: #eab308;
+            box-shadow: 0 0 6px rgba(234, 179, 8, 0.3);
+        }
 
         .dash-bottom {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 16px;
         }
+
         .dash-section {
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 14px;
             padding: 24px;
         }
+
         .dash-section-title {
-            font-size: 11px; font-weight: 500; letter-spacing: 1.5px;
-            text-transform: uppercase; color: var(--text-dim); margin-bottom: 16px;
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            margin-bottom: 16px;
         }
-        .dash-info { display: flex; flex-direction: column; gap: 10px; }
+
+        .dash-info {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
         .dash-info-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 8px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.04);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
             font-size: 13.5px;
         }
-        .dash-info-row:last-child { border-bottom: none; }
-        .dash-info-label { color: var(--text-dim); }
-        .dash-info-value { color: var(--text); font-family: "Consolas", monospace; font-size: 11px; letter-spacing: 0.5px; }
-        .dash-info-value-ok { color: #22c55e; }
-        .dash-actions { display: flex; flex-direction: column; gap: 10px; }
-        .dash-actions .btn-block { width: 100%; }
+
+        .dash-info-row:last-child {
+            border-bottom: none;
+        }
+
+        .dash-info-label {
+            color: var(--text-dim);
+        }
+
+        .dash-info-value {
+            color: var(--text);
+            font-family: "Consolas", monospace;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+        }
+
+        .dash-info-value-ok {
+            color: #22c55e;
+        }
+
+        .dash-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .dash-actions .btn-block {
+            width: 100%;
+        }
 
         #loader {
-            position: fixed; inset: 0;
+            position: fixed;
+            inset: 0;
             background: var(--bg);
             display: none;
             flex-direction: column;
@@ -326,8 +532,14 @@
             opacity: 0;
             transition: opacity .4s ease;
         }
-        #loader.on { display: flex; }
-        #loader.shown { opacity: 1; }
+
+        #loader.on {
+            display: flex;
+        }
+
+        #loader.shown {
+            opacity: 1;
+        }
 
         .loader-logo {
             font-size: 56px;
@@ -339,22 +551,35 @@
             animation: pulse 1.6s ease-in-out infinite;
             margin-bottom: 40px;
         }
+
         @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: .45; }
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: .45;
+            }
         }
+
         .loader-bar {
-            width: 240px; height: 2px;
-            background: rgba(255,255,255,0.06);
+            width: 240px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.06);
             overflow: hidden;
             margin-bottom: 24px;
         }
+
         .loader-bar-fill {
-            height: 100%; width: 0%;
+            height: 100%;
+            width: 0%;
             background: linear-gradient(90deg, var(--purple-600, #7c3aed), var(--purple-500, #a855f7));
-            box-shadow: 0 0 10px rgba(168,85,247,0.4);
+            box-shadow: 0 0 10px rgba(168, 85, 247, 0.4);
             transition: width .45s ease;
         }
+
         .loader-status {
             font-family: "Consolas", monospace;
             font-size: 12px;
@@ -371,567 +596,629 @@
             text-align: center;
             padding: 40px 20px;
         }
+
         .ban-icon {
-            width: 72px; height: 72px;
+            width: 72px;
+            height: 72px;
             margin: 0 auto 24px;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 50%;
-            border: 2px solid rgba(255,90,106,0.3);
+            border: 2px solid rgba(255, 90, 106, 0.3);
             color: #ff6a7a;
         }
-        .ban-title { font-size: 26px; font-weight: 300; letter-spacing: 4px; color: #ff6a7a; margin-bottom: 8px; text-transform: uppercase; }
-        .ban-subtitle { font-size: 14px; color: var(--text-dim); margin-bottom: 24px; }
+
+        .ban-title {
+            font-size: 26px;
+            font-weight: 300;
+            letter-spacing: 4px;
+            color: #ff6a7a;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .ban-subtitle {
+            font-size: 14px;
+            color: var(--text-dim);
+            margin-bottom: 24px;
+        }
+
         .ban-key-box {
-            display: inline-flex; flex-direction: column; align-items: center; gap: 4px;
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
             padding: 14px 24px;
-            border: 1px solid rgba(255,90,106,0.2);
+            border: 1px solid rgba(255, 90, 106, 0.2);
             border-radius: var(--radius);
             margin-bottom: 20px;
         }
-        .ban-key-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); }
-        .ban-key-value { font-family: "Consolas", monospace; font-size: 13px; letter-spacing: 1px; color: #ff8a9a; }
-        .ban-reason { font-size: 13px; color: var(--text-dim); line-height: 1.7; margin-bottom: 8px; }
-        .ban-contact { font-size: 12px; color: var(--text-muted); margin-bottom: 28px; }
+
+        .ban-key-label {
+            font-size: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        .ban-key-value {
+            font-family: "Consolas", monospace;
+            font-size: 13px;
+            letter-spacing: 1px;
+            color: #ff8a9a;
+        }
+
+        .ban-reason {
+            font-size: 13px;
+            color: var(--text-dim);
+            line-height: 1.7;
+            margin-bottom: 8px;
+        }
+
+        .ban-contact {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 28px;
+        }
 
         .status-dot-sm {
-            display: inline-block; width: 6px; height: 6px;
-            border-radius: 50%; background: var(--turquoise);
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--turquoise);
             margin-right: 6px;
         }
 
         @media (max-width: 900px) {
-            .product-side { display: none; }
+            .product-side {
+                display: none;
+            }
         }
+
         @media (max-width: 768px) {
-            .dash-cards { grid-template-columns: 1fr; }
-            .dash-bottom { grid-template-columns: 1fr; }
-            .dash-top { flex-direction: column; align-items: flex-start; gap: 16px; }
-            .home-actions { flex-direction: column; align-items: center; width: 100%; }
-            .home-actions .btn { width: 100%; max-width: 320px; }
-            .plans { flex-direction: column; align-items: center; }
-            .plan { max-width: 100%; }
+            .dash-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .dash-bottom {
+                grid-template-columns: 1fr;
+            }
+
+            .dash-top {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+
+            .home-actions {
+                flex-direction: column;
+                align-items: center;
+                width: 100%;
+            }
+
+            .home-actions .btn {
+                width: 100%;
+                max-width: 320px;
+            }
+
+            .plans {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .plan {
+                max-width: 100%;
+            }
         }
 
         @media (max-width: 480px) {
-            nav { gap: 16px; padding: 20px 0; }
-            nav a { font-size: 11px; }
+            nav {
+                gap: 16px;
+                padding: 20px 0;
+            }
+
+            nav a {
+                font-size: 11px;
+            }
         }
     </style>
 </head>
+
 <body style="display:flex;flex-direction:column;margin:0;">
 
-<nav id="main-nav">
-    <a data-nav="home" class="active" onclick="showView('home')">home</a>
-    <a data-nav="pricing" onclick="showView('pricing')">pricing</a>
-    <a data-nav="register" onclick="showView('auth');showAuthTab('register')">register</a>
-    <a data-nav="login" onclick="showView('auth');showAuthTab('login')">login</a>
-</nav>
+    <nav id="main-nav">
+        <a data-nav="home" class="active" onclick="showView('home')">home</a>
+        <a data-nav="pricing" onclick="showView('pricing')">pricing</a>
+        <a data-nav="register" onclick="showView('auth');showAuthTab('register')">register</a>
+        <a data-nav="login" onclick="showView('auth');showAuthTab('login')">login</a>
+    </nav>
 
-<div class="container" style="flex:1;display:flex;flex-direction:column;min-height:0;max-width:100%;padding:0;">
+    <div class="container" style="flex:1;display:flex;flex-direction:column;min-height:0;max-width:100%;padding:0;">
 
-    <!-- HOME -->
-    <div id="view-home" class="view visible">
-        <div class="product-side">
-            <div class="product-label">our products</div>
-            <img src="product-box.png" alt="Product">
-        </div>
-        <div class="home-logo">nikita<span class="gg-badge">.gg</span></div>
-        <p class="home-tagline">premium software, verified licenses</p>
-        <div class="home-actions">
-            <button class="btn btn-primary" onclick="showView('pricing')">View Plans</button>
-            <button class="btn btn-discord" onclick="window.open('https://discord.gg/sFSVCQNhGt','_blank')">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.947 2.418-2.157 2.418z"/></svg>
-                Join Discord
-            </button>
-            <button class="btn btn-primary" onclick="showView('auth');showAuthTab('register')">Register</button>
-        </div>
-    </div>
-
-    <!-- PRICING -->
-    <div id="view-pricing" class="view">
-        <h2 class="section-title">choose your plan</h2>
-        <div class="plans">
-            <div class="plan">
-                <h3>1 Month</h3>
-                <div class="price">$7.99</div>
-                <div class="period">per month</div>
-                <ul>
-                    <li>Full access</li>
-                    <li>Premium features</li>
-                    <li>Priority support</li>
-                    <li>Regular updates</li>
-                </ul>
-                <button class="btn btn-primary" onclick="showView('auth')">Purchase</button>
+        <!-- HOME -->
+        <div id="view-home" class="view visible">
+            <div class="product-side">
+                <div class="product-label">our products</div>
+                <img src="product-box.png" alt="Product">
             </div>
-            <div class="plan popular">
-                <div class="badge">Most Popular</div>
-                <h3>3 Months</h3>
-                <div class="price">$18.99</div>
-                <div class="period">per 3 months</div>
-                <ul>
-                    <li>Full access</li>
-                    <li>Premium features</li>
-                    <li>Priority support</li>
-                    <li>Regular updates</li>
-                    <li>20% savings</li>
-                </ul>
-                <button class="btn btn-primary" onclick="showView('auth')">Purchase</button>
-            </div>
-            <div class="plan">
-                <h3>6 Months</h3>
-                <div class="price">$33.99</div>
-                <div class="period">per 6 months</div>
-                <ul>
-                    <li>Full access</li>
-                    <li>Beta features</li>
-                    <li>Priority support</li>
-                    <li>Beta updates</li>
-                    <li>30% savings</li>
-                </ul>
-                <button class="btn btn-primary" onclick="showView('auth')">Purchase</button>
+            <div class="home-logo">nikita<span class="gg-badge">.gg</span></div>
+            <p class="home-tagline">premium software, verified licenses</p>
+            <div class="home-actions">
+                <button class="btn btn-primary" onclick="showView('pricing')">View Plans</button>
+                <button class="btn btn-discord" onclick="window.open('https://discord.gg/sFSVCQNhGt','_blank')">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.947 2.418-2.157 2.418z" />
+                    </svg>
+                    Join Discord
+                </button>
+                <button class="btn btn-primary" onclick="showView('auth');showAuthTab('register')">Register</button>
             </div>
         </div>
-    </div>
 
-    <!-- AUTH (Register/Login) -->
-    <div id="view-auth" class="view">
-        <button class="auth-back" onclick="showView('home')">← back</button>
-        <div class="auth-box">
-            <div class="auth-tabs">
-                <div class="auth-tab active" id="tab-register" onclick="showAuthTab('register')">register</div>
-                <div class="auth-tab" id="tab-login" onclick="showAuthTab('login')">login</div>
+        <!-- PRICING -->
+        <div id="view-pricing" class="view">
+            <h2 class="section-title">choose your plan</h2>
+            <div class="plans">
+                <div class="plan">
+                    <h3>1 Month</h3>
+                    <div class="price">$7.99</div>
+                    <div class="period">per month</div>
+                    <ul>
+                        <li>Full access</li>
+                        <li>Premium features</li>
+                        <li>Priority support</li>
+                        <li>Regular updates</li>
+                    </ul>
+                    <button class="btn btn-primary" onclick="showView('auth')">Purchase</button>
+                </div>
+                <div class="plan popular">
+                    <div class="badge">Most Popular</div>
+                    <h3>3 Months</h3>
+                    <div class="price">$18.99</div>
+                    <div class="period">per 3 months</div>
+                    <ul>
+                        <li>Full access</li>
+                        <li>Premium features</li>
+                        <li>Priority support</li>
+                        <li>Regular updates</li>
+                        <li>20% savings</li>
+                    </ul>
+                    <button class="btn btn-primary" onclick="showView('auth')">Purchase</button>
+                </div>
+                <div class="plan">
+                    <h3>6 Months</h3>
+                    <div class="price">$33.99</div>
+                    <div class="period">per 6 months</div>
+                    <ul>
+                        <li>Full access</li>
+                        <li>Beta features</li>
+                        <li>Priority support</li>
+                        <li>Beta updates</li>
+                        <li>30% savings</li>
+                    </ul>
+                    <button class="btn btn-primary" onclick="showView('auth')">Purchase</button>
+                </div>
             </div>
-
-            <form id="form-register" onsubmit="return doRegister(event)">
-                <div class="field">
-                    <div class="field-label"><label>Username</label></div>
-                    <div class="input-wrap"><input type="text" id="reg-user" placeholder="Enter username" autocomplete="off"></div>
-                </div>
-                <div class="field">
-                    <div class="field-label"><label>Password</label></div>
-                    <div class="input-wrap"><input type="password" id="reg-pass" placeholder="Enter password"></div>
-                </div>
-                <div class="field">
-                    <div class="field-label"><label>License Key</label></div>
-                    <div class="input-wrap"><input type="text" id="reg-key" placeholder="Paste your license key" autocomplete="off"></div>
-                </div>
-                <div class="form-error" id="err-register"></div>
-                <button type="submit" class="btn btn-primary btn-block">Register</button>
-            </form>
-
-            <form id="form-login" style="display:none" onsubmit="return doLogin(event)">
-                <div class="field">
-                    <div class="field-label"><label>Username</label></div>
-                    <div class="input-wrap"><input type="text" id="log-user" placeholder="Enter username" autocomplete="off"></div>
-                </div>
-                <div class="field">
-                    <div class="field-label"><label>Password</label></div>
-                    <div class="input-wrap"><input type="password" id="log-pass" placeholder="Enter password"></div>
-                </div>
-                <div class="form-error" id="err-login"></div>
-                <button type="submit" class="btn btn-primary btn-block">Login</button>
-            </form>
         </div>
-    </div>
+
+        <!-- AUTH (Register/Login) -->
+        <div id="view-auth" class="view">
+            <button class="auth-back" onclick="showView('home')">← back</button>
+            <div class="auth-box">
+                <div class="auth-tabs">
+                    <div class="auth-tab active" id="tab-register" onclick="showAuthTab('register')">register</div>
+                    <div class="auth-tab" id="tab-login" onclick="showAuthTab('login')">login</div>
+                </div>
+
+                <form id="form-register" onsubmit="return doRegister(event)">
+                    <div class="field">
+                        <div class="field-label"><label>Username</label></div>
+                        <div class="input-wrap"><input type="text" id="reg-user" placeholder="Enter username"
+                                autocomplete="off"></div>
+                    </div>
+                    <div class="field">
+                        <div class="field-label"><label>Password</label></div>
+                        <div class="input-wrap"><input type="password" id="reg-pass" placeholder="Enter password"></div>
+                    </div>
+                    <div class="field">
+                        <div class="field-label"><label>License Key</label></div>
+                        <div class="input-wrap"><input type="text" id="reg-key" placeholder="Paste your license key"
+                                autocomplete="off"></div>
+                    </div>
+                    <div class="form-error" id="err-register"></div>
+                    <button type="submit" class="btn btn-primary btn-block">Register</button>
+                </form>
+
+                <form id="form-login" style="display:none" onsubmit="return doLogin(event)">
+                    <div class="field">
+                        <div class="field-label"><label>Username</label></div>
+                        <div class="input-wrap"><input type="text" id="log-user" placeholder="Enter username"
+                                autocomplete="off"></div>
+                    </div>
+                    <div class="field">
+                        <div class="field-label"><label>Password</label></div>
+                        <div class="input-wrap"><input type="password" id="log-pass" placeholder="Enter password"></div>
+                    </div>
+                    <div class="form-error" id="err-login"></div>
+                    <button type="submit" class="btn btn-primary btn-block">Login</button>
+                </form>
+            </div>
+        </div>
 
 
 
-    <!-- DASHBOARD -->
-    <div id="view-dashboard" class="view" style="flex:1;padding:40px 24px;">
-        <div class="dash-wrap">
-            <div class="dash-top">
-                <div class="dash-user">
-                    <div class="dash-avatar" id="dash-avatar">U</div>
-                    <div class="dash-user-info">
-                        <h2>welcome back</h2>
-                        <p id="dash-user">user</p>
+        <!-- DASHBOARD -->
+        <div id="view-dashboard" class="view" style="flex:1;padding:40px 24px;">
+            <div class="dash-wrap">
+                <div class="dash-top">
+                    <div class="dash-user">
+                        <div class="dash-avatar" id="dash-avatar">U</div>
+                        <div class="dash-user-info">
+                            <h2>welcome back</h2>
+                            <p id="dash-user">user</p>
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary btn-sm" onclick="doLogout()"
+                        style="padding:10px 24px;">Logout</button>
+                </div>
+
+                <div class="dash-cards">
+                    <div class="dash-card dash-card-accent">
+                        <div class="dash-card-label">license</div>
+                        <div class="dash-card-value" id="dash-license-plan">lifetime</div>
+                        <div class="dash-card-sub"><span class="dot dot-green"></span><span
+                                id="dash-license-status">active</span> &middot; <span
+                                id="dash-license-remaining">lifetime</span></div>
+                    </div>
+                    <div class="dash-card">
+                        <div class="dash-card-label">status</div>
+                        <div class="dash-card-value">undetected</div>
+                        <div class="dash-card-sub" id="dash-checked">last checked just now</div>
+                    </div>
+                    <div class="dash-card">
+                        <div class="dash-card-label">version</div>
+                        <div class="dash-card-value">v2.4.1</div>
+                        <div class="dash-card-sub">latest build</div>
                     </div>
                 </div>
-                <button class="btn btn-secondary btn-sm" onclick="doLogout()" style="padding:10px 24px;">Logout</button>
-            </div>
 
-            <div class="dash-cards">
-                <div class="dash-card dash-card-accent">
-                    <div class="dash-card-label">license</div>
-                    <div class="dash-card-value" id="dash-license-plan">lifetime</div>
-                    <div class="dash-card-sub"><span class="dot dot-green"></span><span id="dash-license-status">active</span> &middot; <span id="dash-license-remaining">lifetime</span></div>
-                </div>
-                <div class="dash-card">
-                    <div class="dash-card-label">status</div>
-                    <div class="dash-card-value">undetected</div>
-                    <div class="dash-card-sub" id="dash-checked">last checked just now</div>
-                </div>
-                <div class="dash-card">
-                    <div class="dash-card-label">version</div>
-                    <div class="dash-card-value">v2.4.1</div>
-                    <div class="dash-card-sub">latest build</div>
-                </div>
-            </div>
-
-            <div class="dash-bottom">
-                <div class="dash-section">
-                    <div class="dash-section-title">license details</div>
-                    <div class="dash-info" id="dash-license-details">
-                        <div class="dash-info-row"><span class="dash-info-label">Key</span><span class="dash-info-value" id="dash-key-display">-</span></div>
-                        <div class="dash-info-row"><span class="dash-info-label">Activated</span><span class="dash-info-value" id="dash-activated-date">-</span></div>
-                        <div class="dash-info-row"><span class="dash-info-label">Valid</span><span class="dash-info-value dash-info-value-ok" id="dash-valid-display">yes</span></div>
+                <div class="dash-bottom">
+                    <div class="dash-section">
+                        <div class="dash-section-title">license details</div>
+                        <div class="dash-info" id="dash-license-details">
+                            <div class="dash-info-row"><span class="dash-info-label">Key</span><span
+                                    class="dash-info-value" id="dash-key-display">-</span></div>
+                            <div class="dash-info-row"><span class="dash-info-label">Activated</span><span
+                                    class="dash-info-value" id="dash-activated-date">-</span></div>
+                            <div class="dash-info-row"><span class="dash-info-label">Valid</span><span
+                                    class="dash-info-value dash-info-value-ok" id="dash-valid-display">yes</span></div>
+                        </div>
+                    </div>
+                    <div class="dash-section">
+                        <div class="dash-section-title">quick actions</div>
+                        <div class="dash-actions">
+                            <button class="btn btn-primary btn-block" onclick="doDownload()" id="btn-download">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                    <polyline points="7 10 12 15 17 10" />
+                                    <line x1="12" y1="15" x2="12" y2="3" />
+                                </svg>
+                                Download
+                            </button>
+                            <div class="dash-card-sub" id="dash-activity-time"
+                                style="text-align:center;margin-top:4px;"></div>
+                        </div>
                     </div>
                 </div>
-                <div class="dash-section">
-                    <div class="dash-section-title">quick actions</div>
-                    <div class="dash-actions">
-                        <button class="btn btn-primary btn-block" onclick="doDownload()" id="btn-download">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                            Download
-                        </button>
-                        <div class="dash-card-sub" id="dash-activity-time" style="text-align:center;margin-top:4px;"></div>
+            </div>
+        </div>
+
+        <!-- BANNED -->
+        <div id="view-banned" class="view" style="flex:1;">
+            <div class="ban-view">
+                <div>
+                    <div class="ban-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1.5">
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
+                        </svg>
                     </div>
+                    <h1 class="ban-title" id="ban-title">access revoked</h1>
+                    <p class="ban-subtitle" id="ban-subtitle">your license has been terminated</p>
+                    <div class="ban-key-box">
+                        <span class="ban-key-label">license key</span>
+                        <span class="ban-key-value" id="ban-key-display">XXXXX-****-****</span>
+                    </div>
+                    <p class="ban-reason">this key has been banned by the administrator.<br>all associated access has
+                        been revoked.</p>
+                    <p class="ban-contact">if you believe this is an error, contact support.</p>
+                    <button class="btn btn-secondary" onclick="doBanLogout()">return to home</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- BANNED -->
-    <div id="view-banned" class="view" style="flex:1;">
-        <div class="ban-view">
-            <div>
-                <div class="ban-icon">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
-                </div>
-                <h1 class="ban-title" id="ban-title">access revoked</h1>
-                <p class="ban-subtitle" id="ban-subtitle">your license has been terminated</p>
-                <div class="ban-key-box">
-                    <span class="ban-key-label">license key</span>
-                    <span class="ban-key-value" id="ban-key-display">XXXXX-****-****</span>
-                </div>
-                <p class="ban-reason">this key has been banned by the administrator.<br>all associated access has been revoked.</p>
-                <p class="ban-contact">if you believe this is an error, contact support.</p>
-                <button class="btn btn-secondary" onclick="doBanLogout()">return to home</button>
-            </div>
+    <!-- LOADER OVERLAY -->
+    <div id="loader">
+        <div class="loader-logo">nikita<span class="gg-badge">.gg</span></div>
+        <div class="loader-bar">
+            <div class="loader-bar-fill" id="loader-fill"></div>
         </div>
+        <div class="loader-status" id="loader-status"></div>
     </div>
-</div>
 
-<!-- LOADER OVERLAY -->
-<div id="loader">
-    <div class="loader-logo">nikita<span class="gg-badge">.gg</span></div>
-    <div class="loader-bar"><div class="loader-bar-fill" id="loader-fill"></div></div>
-    <div class="loader-status" id="loader-status"></div>
-</div>
+    <div class="toast-container" id="toast-container"></div>
 
-<div class="toast-container" id="toast-container"></div>
+    <script src="js/key-system.js"></script>
+    <script>
+        var DURATION_SECONDS = { 'L': null, 'W': 7 * 24 * 60 * 60, 'M': 30 * 24 * 60 * 60 };
 
-<script src="js/key-system.js"></script>
-<script>
-    /* ===== KEY VALIDATION (Client-side RSA) ===== */
-    var PUBLIC_N = "59596791868544965917715049293139712060670803368525004046780554740535049298561";
-    var PUBLIC_E = 65537n;
-    var _CH = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-    var DURATION_SECONDS = { 'L': null, 'W': 7*24*60*60, 'M': 30*24*60*60 };
-
-    function b32Decode(s) {
-        var bits = "";
-        for (var i = 0; i < s.length; i++) {
-            var val = _CH.indexOf(s[i]);
-            if (val === -1) return null;
-            bits += val.toString(2).padStart(5, '0');
-        }
-        var bytes = [];
-        for (var i = 0; i < bits.length; i += 8) {
-            if (i + 8 <= bits.length) bytes.push(parseInt(bits.slice(i, i + 8), 2));
-        }
-        return bytes;
-    }
-    function bytesToBigInt(bytes) {
-        var hex = [];
-        bytes.forEach(function(b) { hex.push(b.toString(16).padStart(2, '0')); });
-        return BigInt("0x" + hex.join(""));
-    }
-    function _h(s) {
-        var h = 0n;
-        for (var i = 0; i < s.length; i++) h = ((h * 31n) + BigInt(s.charCodeAt(i))) & 0xFFFFFFFFFFFFFFFFn;
-        return h;
-    }
-    function powerMod(base, exp, mod) {
-        var r = 1n; base = base % mod;
-        while (exp > 0n) { if (exp % 2n === 1n) r = (r * base) % mod; base = (base * base) % mod; exp = exp / 2n; }
-        return r;
-    }
-    function isValidKey(key) {
-        if (!key) return false;
-        var c = key.trim().toUpperCase().replace(/-/g, '');
-        if (c.length < 15) return false;
-        var p = c.slice(0, 10), sig = c.slice(10);
-        var b = b32Decode(sig); if (!b) return false;
-        var s = bytesToBigInt(b), n = BigInt(PUBLIC_N);
-        return powerMod(s, PUBLIC_E, n) === _h(p);
-    }
-    function getKeyDuration(key) {
-        if (!key) return null;
-        var c = key.trim().toUpperCase().replace(/-/g, '');
-        if (c.length < 10) return null;
-        return DURATION_SECONDS[c.charAt(9)] !== undefined ? DURATION_SECONDS[c.charAt(9)] : null;
-    }
-
-    /* ===== SESSION ===== */
-    var LS_TOKEN = 'ng_token';
-    var CURRENT_TOKEN = null;
-    var CURRENT_USER_DATA = null;
-
-    /* ===== VIEWS ===== */
-    var currentView = 'home';
-
-    function showView(name) {
-        currentView = name;
-        var authEl = document.getElementById('view-auth');
-        if (name === 'auth') {
-            document.querySelectorAll('.view').forEach(function(v) { if (v !== authEl) v.classList.remove('visible'); });
-            authEl.classList.add('visible');
-            document.getElementById('main-nav').style.display = 'none';
-            document.querySelector('.container').style.maxWidth = '100%';
-            document.querySelector('.container').style.padding = '0';
-            return;
-        }
-        if (authEl.classList.contains('visible')) {
-            authEl.classList.remove('visible');
-            setTimeout(function() { showViewInner(name); }, 200);
-            return;
-        }
-        showViewInner(name);
-    }
-    function showViewInner(name) {
-        document.querySelectorAll('.view').forEach(function(v) { v.classList.remove('visible'); });
-        var el = document.getElementById('view-'+name);
-        if (el) el.classList.add('visible');
-        document.querySelectorAll('#main-nav a').forEach(function(a) {
-            a.classList.toggle('active', a.dataset.nav === name);
-        });
-        window.scrollTo(0, 0);
-        var c = document.querySelector('.container');
-        if (name === 'dashboard') { loadDashboard(); document.getElementById('main-nav').style.display = 'none'; c.style.maxWidth = '100%'; c.style.padding = '0'; }
-        else if (name === 'banned') { document.getElementById('main-nav').style.display = 'none'; c.style.maxWidth = ''; c.style.padding = ''; }
-        else if (name === 'home') { document.getElementById('main-nav').style.display = ''; c.style.maxWidth = '100%'; c.style.padding = '0'; }
-        else { document.getElementById('main-nav').style.display = ''; c.style.maxWidth = ''; c.style.padding = ''; }
-    }
-
-    function showAuthTab(t) {
-        document.getElementById('tab-register').classList.toggle('active', t==='register');
-        document.getElementById('tab-login').classList.toggle('active', t==='login');
-        document.getElementById('form-register').style.display = t==='register' ? '' : 'none';
-        document.getElementById('form-login').style.display = t==='login' ? '' : 'none';
-        document.getElementById('err-register').textContent = '';
-        document.getElementById('err-login').textContent = '';
-        document.querySelectorAll('#main-nav a').forEach(function(a) {
-            a.classList.toggle('active', a.dataset.nav === t);
-        });
-    }
-
-    function showToast(msg, type) {
-        var c = document.getElementById('toast-container');
-        var t = document.createElement('div');
-        t.className = 'toast toast-'+type;
-        t.textContent = msg;
-        c.appendChild(t);
-        setTimeout(function() { t.remove(); }, 3500);
-    }
-
-    function showLoader(steps, finalView, finalCb) {
-        var loader = document.getElementById('loader');
-        var fill = document.getElementById('loader-fill');
-        var status = document.getElementById('loader-status');
-        fill.style.width = '0%';
-        loader.classList.add('on');
-        requestAnimationFrame(function() { loader.classList.add('shown'); });
-        steps.forEach(function(s) { setTimeout(function() { fill.style.width = s[1]; status.innerHTML = s[2]; }, s[0]); });
-        setTimeout(function() {
-            if (finalView) showView(finalView);
-            if (finalCb) finalCb();
-            loader.classList.remove('shown');
-            setTimeout(function() { loader.classList.remove('on'); }, 400);
-        }, steps[steps.length-1][0] + 400);
-    }
-
-    /* ===== AUTH ===== */
-    async function apiPost(path, body) {
-        var headers = { 'Content-Type': 'application/json' };
-        if (CURRENT_TOKEN) headers['Authorization'] = 'Bearer ' + CURRENT_TOKEN;
-        var res = await fetch(path, { method: 'POST', headers: headers, body: JSON.stringify(body) });
-        var data = await res.json();
-        if (!res.ok) throw new Error(data.detail || 'Request failed');
-        return data;
-    }
-
-    async function doRegister(e) {
-        e.preventDefault();
-        var err = document.getElementById('err-register');
-        var user = document.getElementById('reg-user').value.trim();
-        var pass = document.getElementById('reg-pass').value;
-        var key = document.getElementById('reg-key').value.trim();
-        err.textContent = '';
-        if (!user || !pass || !key) { err.textContent = 'fill all fields'; return false; }
-        if (!isValidKey(key)) { err.textContent = 'invalid license key'; return false; }
-        try {
-            var data = await apiPost('/api/register', { username: user, password: pass, key: key });
-            CURRENT_TOKEN = data.token;
-            CURRENT_USER_DATA = data.user;
-            localStorage.setItem(LS_TOKEN, CURRENT_TOKEN);
-        } catch(e) { err.textContent = e.message; return false; }
-        enterDashboard();
-        return false;
-    }
-
-    async function doLogin(e) {
-        e.preventDefault();
-        var err = document.getElementById('err-login');
-        var user = document.getElementById('log-user').value.trim();
-        var pass = document.getElementById('log-pass').value;
-        err.textContent = '';
-        if (!user || !pass) { err.textContent = 'fill all fields'; return false; }
-        try {
-            var data = await apiPost('/api/login', { username: user, password: pass });
-            CURRENT_TOKEN = data.token;
-            CURRENT_USER_DATA = data.user;
-            localStorage.setItem(LS_TOKEN, CURRENT_TOKEN);
-        } catch(e) { err.textContent = e.message; return false; }
-        enterDashboard();
-        return false;
-    }
-
-    function enterDashboard() {
-        document.getElementById('dash-user').textContent = CURRENT_USER_DATA.username;
-        document.getElementById('dash-avatar').textContent = CURRENT_USER_DATA.username.charAt(0).toUpperCase();
-        showLoader([
-            [300, '30%', 'authenticating...'],
-            [900, '65%', 'loading dashboard...'],
-            [1500, '100%', '<span style="color:var(--turquoise)">access granted</span>']
-        ], 'dashboard', function() {
-            document.getElementById('main-nav').style.display = 'none';
-        });
-    }
-
-    function doLogout() {
-        if (banCheckInterval) clearInterval(banCheckInterval);
-        showLoader([
-            [250, '45%', 'signing out...'],
-            [800, '100%', '<span style="color:var(--turquoise)">session closed</span>']
-        ], 'home', function() {
-            CURRENT_TOKEN = null;
-            CURRENT_USER_DATA = null;
-            localStorage.removeItem(LS_TOKEN);
-            document.getElementById('main-nav').style.display = '';
-            document.getElementById('form-login').reset();
-            document.getElementById('form-register').reset();
-        });
-    }
-
-    function doBanLogout() {
-        if (banCheckInterval) clearInterval(banCheckInterval);
-        showLoader([
-            [300, '50%', 'revoking access...'],
-            [800, '100%', '<span style="color:#ff6a7a">access denied</span>']
-        ], 'home', function() {
-            CURRENT_TOKEN = null;
-            CURRENT_USER_DATA = null;
-            localStorage.removeItem(LS_TOKEN);
-            document.getElementById('main-nav').style.display = '';
-        });
-    }
-
-    /* ===== DASHBOARD ===== */
-    function loadDashboard() {
-        if (!CURRENT_USER_DATA) return;
-        var key = CURRENT_USER_DATA.key;
-        document.getElementById('dash-key-display').textContent = key;
-        var dur = getKeyDuration(key);
-        var planText = 'lifetime';
-        if (dur !== null) {
-            planText = dur === 7*24*60*60 ? '1 week' : dur === 30*24*60*60 ? '1 month' : 'custom';
-        }
-        document.getElementById('dash-license-plan').textContent = planText;
-        document.getElementById('dash-valid-display').textContent = 'yes';
-
-        if (CURRENT_USER_DATA.joined) {
-            document.getElementById('dash-activated-date').textContent = new Date(CURRENT_USER_DATA.joined).toLocaleDateString();
-            document.getElementById('dash-activity-time').textContent = new Date(CURRENT_USER_DATA.joined).toLocaleString();
+        function getKeyDuration(key) {
+            if (!key) return null;
+            var c = key.trim().toUpperCase().replace(/-/g, '');
+            if (c.length < 10) return null;
+            return DURATION_SECONDS[c.charAt(9)] !== undefined ? DURATION_SECONDS[c.charAt(9)] : null;
         }
 
-        if (dur !== null) {
-            var activated = new Date(CURRENT_USER_DATA.joined).getTime();
-            var expiresAt = activated + (dur * 1000);
-            var now = Date.now();
-            var remaining = expiresAt - now;
-            if (remaining > 0) {
-                var days = Math.floor(remaining / (24*60*60*1000));
-                var text = days > 0 ? days + ' day' + (days > 1 ? 's' : '') + ' remaining' : 'expiring soon';
-                document.getElementById('dash-license-remaining').textContent = text;
-                document.getElementById('dash-license-remaining').className = days < 3 ? 'warn' : 'ok';
-            } else {
-                document.getElementById('dash-license-remaining').textContent = 'expired';
-                document.getElementById('dash-license-remaining').className = 'warn';
+        /* ===== SESSION ===== */
+        var LS_TOKEN = 'ng_token';
+        var CURRENT_TOKEN = null;
+        var CURRENT_USER_DATA = null;
+
+        /* ===== VIEWS ===== */
+        var currentView = 'home';
+
+        function showView(name) {
+            currentView = name;
+            var authEl = document.getElementById('view-auth');
+            if (name === 'auth') {
+                document.querySelectorAll('.view').forEach(function (v) { if (v !== authEl) v.classList.remove('visible'); });
+                authEl.classList.add('visible');
+                document.getElementById('main-nav').style.display = 'none';
+                document.querySelector('.container').style.maxWidth = '100%';
+                document.querySelector('.container').style.padding = '0';
+                return;
             }
-        } else {
-            document.getElementById('dash-license-remaining').textContent = 'lifetime';
-            document.getElementById('dash-license-remaining').className = 'ok';
+            if (authEl.classList.contains('visible')) {
+                authEl.classList.remove('visible');
+                setTimeout(function () { showViewInner(name); }, 200);
+                return;
+            }
+            showViewInner(name);
         }
-    }
+        function showViewInner(name) {
+            document.querySelectorAll('.view').forEach(function (v) { v.classList.remove('visible'); });
+            var el = document.getElementById('view-' + name);
+            if (el) el.classList.add('visible');
+            document.querySelectorAll('#main-nav a').forEach(function (a) {
+                a.classList.toggle('active', a.dataset.nav === name);
+            });
+            window.scrollTo(0, 0);
+            var c = document.querySelector('.container');
+            if (name === 'dashboard') { loadDashboard(); document.getElementById('main-nav').style.display = 'none'; c.style.maxWidth = '100%'; c.style.padding = '0'; }
+            else if (name === 'banned') { document.getElementById('main-nav').style.display = 'none'; c.style.maxWidth = ''; c.style.padding = ''; }
+            else if (name === 'home') { document.getElementById('main-nav').style.display = ''; c.style.maxWidth = '100%'; c.style.padding = '0'; }
+            else { document.getElementById('main-nav').style.display = ''; c.style.maxWidth = ''; c.style.padding = ''; }
+        }
 
-    /* ===== DOWNLOAD LOADER ===== */
-    function doDownload() {
-        showLoader([
-            [400, '20%', 'preparing download...'],
-            [1000, '55%', 'encrypting payload...'],
-            [1800, '85%', 'verifying license...'],
-            [2400, '100%', '<span style="color:var(--turquoise)">download ready</span>']
-        ], null, function() {
-            showToast('Download started', 'success');
-        });
-    }
+        function showAuthTab(t) {
+            document.getElementById('tab-register').classList.toggle('active', t === 'register');
+            document.getElementById('tab-login').classList.toggle('active', t === 'login');
+            document.getElementById('form-register').style.display = t === 'register' ? '' : 'none';
+            document.getElementById('form-login').style.display = t === 'login' ? '' : 'none';
+            document.getElementById('err-register').textContent = '';
+            document.getElementById('err-login').textContent = '';
+            document.querySelectorAll('#main-nav a').forEach(function (a) {
+                a.classList.toggle('active', a.dataset.nav === t);
+            });
+        }
 
-    /* ===== BAN CHECKING ===== */
-    var banCheckInterval = null;
+        function showToast(msg, type) {
+            var c = document.getElementById('toast-container');
+            var t = document.createElement('div');
+            t.className = 'toast toast-' + type;
+            t.textContent = msg;
+            c.appendChild(t);
+            setTimeout(function () { t.remove(); }, 3500);
+        }
 
-    function startBanPolling() {
-        if (banCheckInterval) clearInterval(banCheckInterval);
-        banCheckInterval = setInterval(function() {
+        function showLoader(steps, finalView, finalCb) {
+            var loader = document.getElementById('loader');
+            var fill = document.getElementById('loader-fill');
+            var status = document.getElementById('loader-status');
+            fill.style.width = '0%';
+            loader.classList.add('on');
+            requestAnimationFrame(function () { loader.classList.add('shown'); });
+            steps.forEach(function (s) { setTimeout(function () { fill.style.width = s[1]; status.innerHTML = s[2]; }, s[0]); });
+            setTimeout(function () {
+                if (finalView) showView(finalView);
+                if (finalCb) finalCb();
+                loader.classList.remove('shown');
+                setTimeout(function () { loader.classList.remove('on'); }, 400);
+            }, steps[steps.length - 1][0] + 400);
+        }
+
+        /* ===== AUTH ===== */
+        async function apiPost(path, body) {
+            var headers = { 'Content-Type': 'application/json' };
+            if (CURRENT_TOKEN) headers['Authorization'] = 'Bearer ' + CURRENT_TOKEN;
+            var res = await fetch(path, { method: 'POST', headers: headers, body: JSON.stringify(body) });
+            var data = await res.json();
+            if (!res.ok) throw new Error(data.detail || 'Request failed');
+            return data;
+        }
+
+        async function doRegister(e) {
+            e.preventDefault();
+            var err = document.getElementById('err-register');
+            var user = document.getElementById('reg-user').value.trim();
+            var pass = document.getElementById('reg-pass').value;
+            var key = document.getElementById('reg-key').value.trim();
+            err.textContent = '';
+            if (!user || !pass || !key) { err.textContent = 'fill all fields'; return false; }
+            if (!KeySystem.isValidKey(key)) { err.textContent = 'invalid license key'; return false; }
+            try {
+                var data = await apiPost('/api/register', { username: user, password: pass, key: key });
+                if (!data.success) { err.textContent = data.message || 'registration failed'; return false; }
+                CURRENT_TOKEN = data.token;
+                CURRENT_USER_DATA = data.user;
+                localStorage.setItem(LS_TOKEN, CURRENT_TOKEN);
+            } catch (e) { err.textContent = e.message; return false; }
+            enterDashboard();
+            return false;
+        }
+
+        async function doLogin(e) {
+            e.preventDefault();
+            var err = document.getElementById('err-login');
+            var user = document.getElementById('log-user').value.trim();
+            var pass = document.getElementById('log-pass').value;
+            err.textContent = '';
+            if (!user || !pass) { err.textContent = 'fill all fields'; return false; }
+            try {
+                var data = await apiPost('/api/login', { username: user, password: pass });
+                if (!data.success) { err.textContent = data.message || 'invalid username or password'; return false; }
+                CURRENT_TOKEN = data.token;
+                CURRENT_USER_DATA = data.user;
+                localStorage.setItem(LS_TOKEN, CURRENT_TOKEN);
+            } catch (e) { err.textContent = e.message; return false; }
+            enterDashboard();
+            return false;
+        }
+
+        function enterDashboard() {
+            document.getElementById('dash-user').textContent = CURRENT_USER_DATA.username;
+            document.getElementById('dash-avatar').textContent = CURRENT_USER_DATA.username.charAt(0).toUpperCase();
+            showLoader([
+                [300, '30%', 'authenticating...'],
+                [900, '65%', 'loading dashboard...'],
+                [1500, '100%', '<span style="color:var(--turquoise)">access granted</span>']
+            ], 'dashboard', function () {
+                document.getElementById('main-nav').style.display = 'none';
+            });
+        }
+
+        function doLogout() {
+            if (banCheckInterval) clearInterval(banCheckInterval);
+            showLoader([
+                [250, '45%', 'signing out...'],
+                [800, '100%', '<span style="color:var(--turquoise)">session closed</span>']
+            ], 'home', function () {
+                CURRENT_TOKEN = null;
+                CURRENT_USER_DATA = null;
+                localStorage.removeItem(LS_TOKEN);
+                document.getElementById('main-nav').style.display = '';
+                document.getElementById('form-login').reset();
+                document.getElementById('form-register').reset();
+            });
+        }
+
+        function doBanLogout() {
+            if (banCheckInterval) clearInterval(banCheckInterval);
+            showLoader([
+                [300, '50%', 'revoking access...'],
+                [800, '100%', '<span style="color:#ff6a7a">access denied</span>']
+            ], 'home', function () {
+                CURRENT_TOKEN = null;
+                CURRENT_USER_DATA = null;
+                localStorage.removeItem(LS_TOKEN);
+                document.getElementById('main-nav').style.display = '';
+            });
+        }
+
+        /* ===== DASHBOARD ===== */
+        function loadDashboard() {
             if (!CURRENT_USER_DATA) return;
-            KeySystem.validateKey(CURRENT_USER_DATA.key, null).then(function(r) {
-                if (!r.valid && r.message === 'Key is banned') {
-                    showBanScreen(CURRENT_USER_DATA.key);
+            var joined = CURRENT_USER_DATA.created_at || CURRENT_USER_DATA.joined || '';
+            document.getElementById('dash-key-display').textContent = CURRENT_USER_DATA.key || '—';
+            document.getElementById('dash-license-plan').textContent = 'active';
+            document.getElementById('dash-valid-display').textContent = 'yes';
+
+            if (joined) {
+                document.getElementById('dash-activated-date').textContent = new Date(joined).toLocaleDateString();
+                document.getElementById('dash-activity-time').textContent = new Date(joined).toLocaleString();
+            }
+
+            if (CURRENT_USER_DATA.subscription_expiry) {
+                var expiresAt = new Date(CURRENT_USER_DATA.subscription_expiry).getTime();
+                var now = Date.now();
+                var remaining = expiresAt - now;
+                if (remaining > 0) {
+                    var days = Math.floor(remaining / (24 * 60 * 60 * 1000));
+                    var text = days > 0 ? days + ' day' + (days > 1 ? 's' : '') + ' remaining' : 'expiring soon';
+                    document.getElementById('dash-license-remaining').textContent = text;
+                    document.getElementById('dash-license-remaining').className = days < 3 ? 'warn' : 'ok';
+                } else {
+                    document.getElementById('dash-license-remaining').textContent = 'expired';
+                    document.getElementById('dash-license-remaining').className = 'warn';
                 }
-            }).catch(function() {});
-        }, 30000);
-    }
-
-    function showBanScreen(key) {
-        var display = key.substring(0, 7) + '-****-****-****';
-        document.getElementById('ban-key-display').textContent = display;
-        document.getElementById('main-nav').style.display = 'none';
-        showView('banned');
-        if (banCheckInterval) clearInterval(banCheckInterval);
-    }
-
-    /* ===== INIT ===== */
-    document.addEventListener('DOMContentLoaded', function() {
-        var token = localStorage.getItem(LS_TOKEN);
-        if (token) {
-            CURRENT_TOKEN = token;
-            fetch('/api/session', { headers: { 'Authorization': 'Bearer ' + token } })
-                .then(function(r) { if (!r.ok) throw new Error(); return r.json(); })
-                .then(function(data) {
-                    CURRENT_USER_DATA = data.user;
-                    document.getElementById('dash-user').textContent = data.user.username;
-                    document.getElementById('main-nav').style.display = 'none';
-                    showView('dashboard');
-                    startBanPolling();
-                })
-                .catch(function() {
-                    localStorage.removeItem(LS_TOKEN);
-                    CURRENT_TOKEN = null;
-                });
+            } else {
+                document.getElementById('dash-license-remaining').textContent = 'lifetime';
+                document.getElementById('dash-license-remaining').className = 'ok';
+            }
         }
-    });
-</script>
+
+        /* ===== DOWNLOAD LOADER ===== */
+        function doDownload() {
+            showLoader([
+                [400, '20%', 'preparing download...'],
+                [1000, '55%', 'encrypting payload...'],
+                [1800, '85%', 'verifying license...'],
+                [2400, '100%', '<span style="color:var(--turquoise)">download ready</span>']
+            ], null, function () {
+                showToast('Download started', 'success');
+            });
+        }
+
+        /* ===== BAN CHECKING ===== */
+        var banCheckInterval = null;
+
+        function startBanPolling() {
+            if (banCheckInterval) clearInterval(banCheckInterval);
+            banCheckInterval = setInterval(function () {
+                if (!CURRENT_USER_DATA) return;
+                KeySystem.validateKey(CURRENT_USER_DATA.key, null).then(function (r) {
+                    if (!r.valid && r.message === 'Key is banned') {
+                        showBanScreen(CURRENT_USER_DATA.key);
+                    }
+                }).catch(function () { });
+            }, 30000);
+        }
+
+        function showBanScreen(key) {
+            var display = key.substring(0, 7) + '-****-****-****';
+            document.getElementById('ban-key-display').textContent = display;
+            document.getElementById('main-nav').style.display = 'none';
+            showView('banned');
+            if (banCheckInterval) clearInterval(banCheckInterval);
+        }
+
+        /* ===== INIT ===== */
+        document.addEventListener('DOMContentLoaded', function () {
+            var token = localStorage.getItem(LS_TOKEN);
+            if (token) {
+                CURRENT_TOKEN = token;
+                fetch('/api/session', { headers: { 'Authorization': 'Bearer ' + token } })
+                    .then(function (r) { if (!r.ok) throw new Error(); return r.json(); })
+                    .then(function (data) {
+                        CURRENT_USER_DATA = data.user;
+                        document.getElementById('dash-user').textContent = data.user.username;
+                        document.getElementById('main-nav').style.display = 'none';
+                        showView('dashboard');
+                        startBanPolling();
+                    })
+                    .catch(function () {
+                        localStorage.removeItem(LS_TOKEN);
+                        CURRENT_TOKEN = null;
+                    });
+            }
+        });
+    </script>
 </body>
+
 </html>
