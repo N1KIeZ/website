@@ -106,12 +106,9 @@ def verify_user(username, password, hwid=None):
         except:
             pass
 
-    # HWID lock: if user already has an HWID, it must match
-    if user['hwid']:
-        if not hwid:
-            return {'success': False, 'message': 'This account is locked to a specific PC. HWID required.'}
-        if user['hwid'] != hwid:
-            return {'success': False, 'message': 'This account is locked to another PC. HWID mismatch.'}
+    # HWID lock: only enforce when HWID is provided (loader). Website login (no HWID) is always allowed.
+    if hwid and user['hwid'] and user['hwid'] != hwid:
+        return {'success': False, 'message': 'This account is locked to another PC. HWID mismatch.'}
 
     # Check password with bcrypt
     try:
