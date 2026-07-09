@@ -276,14 +276,24 @@ async def api_validate(req: ValidateRequest):
 
 
 @app.post("/api/generate")
+async def api_generate(req: ValidateRequest):
+    return {"detail": "Use /api/bot/genkey instead"}
 
 @app.get("/api/stock")
+async def api_stock():
+    return get_stock()
 
 @app.get("/api/keys")
+async def api_keys():
+    return {"keys": get_all_keys()}
 
 @app.post("/api/ban")
+async def api_ban(req: BanRequest):
+    return {"success": ban_key(req.key)}
 
 @app.post("/api/unban")
+async def api_unban(req: BanRequest):
+    return {"success": unban_key(req.key)}
 
 @app.post("/api/redeem")
 async def api_redeem(req: ValidateRequest):

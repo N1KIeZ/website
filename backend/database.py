@@ -76,6 +76,18 @@ def get_user(username):
         }
     return None
 
+def set_subscription_expiry(username, expiry_iso):
+    """Set the subscription_expiry for a user (ISO string or None for lifetime)."""
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute(
+        'UPDATE users SET subscription_expiry = ? WHERE username = ?',
+        (expiry_iso, username)
+    )
+    conn.commit()
+    conn.close()
+
+
 def update_hwid(username, hwid):
     """Update user's HWID"""
     conn = get_db()
