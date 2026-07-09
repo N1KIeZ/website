@@ -2,7 +2,7 @@
 import os
 import secrets
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -185,7 +185,8 @@ def get_stock():
     }
 
 
-def generate_keys(amount):
+def generate_keys(amount, duration='lifetime'):
+    """Generate keys with an embedded duration and server-side expiry."""
     keys_data = load_keys()
     new_keys = []
 
@@ -207,9 +208,12 @@ def generate_keys(amount):
     for k in load_banned():
         existing.add(k)
 
+    dur_char, td = _DURATION_MAP.get(duration, ('L', None))
+    expires_at = (datetime.now() + td).isoformat() if td else None
+
     while len(new_keys) < amount:
         prefix = "".join(secrets.choice(prefix_chars) for _ in range(9))
-        payload = prefix + "L"
+        payload = prefix + dur_char
         h = _h(payload)
         sig = pow(h, STATIC_D, STATIC_N)
         sig_bytes = sig.to_bytes((sig.bit_length() + 7) // 8, byteorder='big')
@@ -219,7 +223,12 @@ def generate_keys(amount):
 
         if formatted_key not in existing:
             existing.add(formatted_key)
-            entry = {"key": formatted_key, "created": datetime.now().isoformat()}
+            entry = {
+                "key": formatted_key,
+                "duration": duration,
+                "expires_at": expires_at,
+                "created": datetime.now().isoformat(),
+            }
             keys_data["available"].append(entry)
             new_keys.append(entry)
 
@@ -247,17 +256,94 @@ def redeem_key(key):
     # Find and consume from available
     for i, k in enumerate(keys_data["available"]):
         if k["key"] == key:
+            duration = k.get("duration") or _decode_duration(key)
             entry = {**k, "activated_at": datetime.now().isoformat(), "redeemed": True}
             keys_data["used"].append(entry)
             del keys_data["available"][i]
             save_keys(keys_data)
-            return {"success": True, "message": "Key redeemed"}
+            return {"success": True, "message": "Key redeemed", "duration": duration}
 
-    # Valid signature but not in DB ÔÇö activate it (for EXE-generated keys)
-    entry = {"key": key, "activated_at": datetime.now().isoformat(), "redeemed": True}
+    # Valid signature but not in DB - activate it (for offline-generated keys)
+    duration = _decode_duration(key)
+    entry = {"key": key, "duration": duration, "activated_at": datetime.now().isoformat(), "redeemed": True}
     keys_data["used"].append(entry)
     save_keys(keys_data)
-    return {"success": True, "message": "Key redeemed"}
+    return {"success": True, "message": "Key redeemed", "duration": duration}
+
+
+_DURATION_MAP = {
+    '5 minutes': ('H', timedelta(minutes=5)),
+    '30 minutes': ('T', timedelta(minutes=30)),
+    '1 hour': ('U', timedelta(hours=1)),
+    '1 day': ('D', timedelta(days=1)),
+    '1 week': ('W', timedelta(days=7)),
+    '1 month': ('M', timedelta(days=30)),
+    '1 year': ('Y', timedelta(days=365)),
+    'lifetime': ('L', None),
+}
+
+_DUR_CHAR_TO_NAME = {v[0]: k for k, v in _DURATION_MAP.items()}
+
+# Shorthand aliases used by the Discord bot
+DURATION_ALIASES = {
+    '5m': '5 minutes',
+    '30m': '30 minutes',
+    '1h': '1 hour',
+    'hour': '1 hour',
+    'day': '1 day',
+    '1d': '1 day',
+    'week': '1 week',
+    '1w': '1 week',
+    'month': '1 month',
+    '1mo': '1 month',
+    'year': '1 year',
+    '1y': '1 year',
+    'lifetime': 'lifetime',
+    'perm': 'lifetime',
+    'permament': 'lifetime',
+    'forever': 'lifetime',
+}
+
+
+def resolve_duration(raw):
+    """Resolve a user-supplied duration string to the canonical form."""
+    raw = raw.strip().lower()
+    if raw in DURATION_ALIASES:
+        return DURATION_ALIASES[raw]
+    if raw in _DURATION_MAP:
+        return raw
+    return 'lifetime'
+
+
+def _decode_duration(key):
+    """Extract duration info from the key payload itself (character 9 in raw format)."""
+    clean = key.strip().upper().replace('-', '')
+    if len(clean) < 10:
+        return 'lifetime'
+    dur_char = clean[9]
+    return _DUR_CHAR_TO_NAME.get(dur_char, 'lifetime')
+
+
+def _duration_to_expiry(duration):
+    """Convert a duration string to an ISO expiry datetime string, or None for lifetime."""
+    if duration == 'lifetime' or not duration:
+        return None
+    now = datetime.now()
+    td = _DURATION_MAP.get(duration, (None, None))[1]
+    if td is None:
+        return None
+    return (now + td).isoformat()
+
+
+def _key_is_expired(key_entry):
+    """Return True if a key entry has passed its expiry."""
+    exp = key_entry.get('expires_at')
+    if not exp:
+        return False
+    try:
+        return datetime.fromisoformat(exp) < datetime.now()
+    except Exception:
+        return False
 
 
 def get_all_keys():

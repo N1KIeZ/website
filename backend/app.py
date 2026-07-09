@@ -14,9 +14,10 @@ from typing import Optional
 
 from backend.key_system import (
     validate_key, ban_key, unban_key, get_stock, get_all_keys, is_valid_key,
-    generate_keys as gen_keys, redeem_key
+    generate_keys as gen_keys, redeem_key, _duration_to_expiry, _key_is_expired,
+    resolve_duration, load_keys, save_keys, load_banned
 )
-from backend.database import create_user, verify_user, get_user, init_db, get_db
+from backend.database import create_user, verify_user, get_user, init_db, get_db, set_subscription_expiry
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 PUBLIC_DIR = BASE_DIR / "public"
@@ -148,6 +149,30 @@ class LoginKeyRequest(BaseModel):
     key: str
 
 
+BOT_SECRET = os.environ.get("BOT_SECRET", "CHANGE_ME_TO_A_RANDOM_STRING")
+
+
+class BotGenKeyRequest(BaseModel):
+    duration: str = "lifetime"
+    amount: int = 1
+    secret: str
+
+
+class BotVerifyRequest(BaseModel):
+    key: str
+    secret: str
+
+
+class BotRevokeRequest(BaseModel):
+    key: str
+    secret: str
+
+
+class LoaderVerifyRequest(BaseModel):
+    key: str
+    hwid: Optional[str] = None
+
+
 # ÔöÇÔöÇÔöÇ Auth endpoints ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 @app.post("/api/register")
 async def api_register(req: RegisterRequest):
@@ -170,6 +195,11 @@ async def api_register(req: RegisterRequest):
     ok = create_user(user, req.password.strip())
     if not ok:
         raise HTTPException(status_code=500, detail="Failed to create user")
+
+    # Set subscription expiry based on key duration
+    duration = result.get("duration", "lifetime")
+    expiry = _duration_to_expiry(duration)
+    set_subscription_expiry(user, expiry)
 
     # Also save to JSON for backward compatibility
     users = load_users()
@@ -268,7 +298,144 @@ async def api_check(req: ValidateRequest):
 
 @app.get("/api/health")
 async def health():
-    return {"status": "ok", "version": "2.0.0"}
+    return {"status": "ok", "version": "2.1.0"}
+
+
+# ---------- Bot API endpoints ----------
+
+@app.post("/api/bot/genkey")
+async def api_bot_genkey(req: BotGenKeyRequest):
+    """Generate license keys. Called by the Discord bot."""
+    if req.secret != BOT_SECRET:
+        raise HTTPException(status_code=401, detail="Invalid bot secret")
+    if req.amount < 1 or req.amount > 50:
+        raise HTTPException(status_code=400, detail="Amount must be 1-50")
+
+    duration = resolve_duration(req.duration)
+    new_keys = gen_keys(req.amount, duration)
+    return {
+        "success": True,
+        "keys": [
+            {
+                "key": k["key"],
+                "duration": k.get("duration", duration),
+                "expires_at": k.get("expires_at"),
+            }
+            for k in new_keys
+        ],
+    }
+
+
+@app.post("/api/bot/verify")
+async def api_bot_verify(req: BotVerifyRequest):
+    """Verify a key's validity. Called by the Discord bot."""
+    if req.secret != BOT_SECRET:
+        raise HTTPException(status_code=401, detail="Invalid bot secret")
+
+    key = req.key.strip().upper()
+    banned = load_banned()
+    if key in banned:
+        return {"valid": False, "status": "banned", "message": "Key is banned"}
+
+    if not is_valid_key(key):
+        return {"valid": False, "status": "invalid", "message": "Invalid key signature"}
+
+    keys_data = load_keys()
+    for k in keys_data["available"]:
+        if k["key"] == key:
+            if _key_is_expired(k):
+                return {"valid": False, "status": "expired", "message": "Key has expired",
+                        "expires_at": k.get("expires_at"), "duration": k.get("duration", "lifetime")}
+            return {"valid": True, "status": "available", "message": "Key is valid (unused)",
+                    "duration": k.get("duration", "lifetime"), "expires_at": k.get("expires_at")}
+
+    for k in keys_data["used"]:
+        if k["key"] == key:
+            if _key_is_expired(k):
+                return {"valid": False, "status": "expired", "message": "Key has expired",
+                        "expires_at": k.get("expires_at"), "duration": k.get("duration", "lifetime")}
+            return {"valid": True, "status": "active", "message": "Key is active",
+                    "duration": k.get("duration", "lifetime"), "expires_at": k.get("expires_at"),
+                    "hwid": k.get("hwid"), "activated_at": k.get("activated_at")}
+
+    return {"valid": False, "status": "not_found", "message": "Key not found in database"}
+
+
+@app.post("/api/bot/revoke")
+async def api_bot_revoke(req: BotRevokeRequest):
+    """Revoke (ban) a key. Called by the Discord bot."""
+    if req.secret != BOT_SECRET:
+        raise HTTPException(status_code=401, detail="Invalid bot secret")
+
+    key = req.key.strip().upper()
+    result = ban_key(key)
+    if result:
+        return {"success": True, "message": "Key revoked"}
+    return {"success": False, "message": "Key not found or already banned"}
+
+
+# ---------- Loader API endpoint ----------
+
+@app.post("/api/loader/verify")
+async def api_loader_verify(req: LoaderVerifyRequest):
+    """Verify a key for the C++ loader. Returns validity + expiry info."""
+    key = req.key.strip().upper()
+    banned = load_banned()
+
+    if key in banned:
+        return {"success": False, "valid": False, "message": "Key is banned"}
+
+    if not is_valid_key(key):
+        return {"success": False, "valid": False, "message": "Invalid key"}
+
+    keys_data = load_keys()
+
+    # Check available keys
+    for k in keys_data["available"]:
+        if k["key"] == key:
+            if _key_is_expired(k):
+                return {"success": False, "valid": False, "message": "Key expired",
+                        "expires_at": k.get("expires_at"), "duration": k.get("duration", "lifetime")}
+            # Activate the key
+            k["hwid"] = req.hwid
+            k["activated_at"] = datetime.now(timezone.utc).isoformat()
+            keys_data["used"].append(k)
+            keys_data["available"].remove(k)
+            save_keys(keys_data)
+            return {
+                "success": True, "valid": True, "message": "Key activated",
+                "duration": k.get("duration", "lifetime"),
+                "expires_at": k.get("expires_at"),
+            }
+
+    # Check used/active keys
+    for k in keys_data["used"]:
+        if k["key"] == key:
+            if _key_is_expired(k):
+                return {"success": False, "valid": False, "message": "Key expired",
+                        "expires_at": k.get("expires_at"), "duration": k.get("duration", "lifetime")}
+            # HWID check (optional - allow first 5 chars or exact match)
+            if req.hwid and k.get("hwid") and k["hwid"] != req.hwid:
+                return {"success": False, "valid": False, "message": "Key bound to another device"}
+            return {
+                "success": True, "valid": True, "message": "Key valid",
+                "duration": k.get("duration", "lifetime"),
+                "expires_at": k.get("expires_at"),
+            }
+
+    # Valid signature but not in DB - activate on the fly
+    duration = _decode_duration(key)
+    expires_at = _duration_to_expiry(duration)
+    entry = {
+        "key": key, "duration": duration, "expires_at": expires_at,
+        "hwid": req.hwid, "activated_at": datetime.now(timezone.utc).isoformat(),
+    }
+    keys_data["used"].append(entry)
+    save_keys(keys_data)
+    return {
+        "success": True, "valid": True, "message": "Key activated",
+        "duration": duration, "expires_at": expires_at,
+    }
 
 
 MIME_TYPES = {
