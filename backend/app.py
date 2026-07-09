@@ -17,7 +17,7 @@ from backend.key_system import (
     generate_keys as gen_keys, redeem_key, _duration_to_expiry, _key_is_expired,
     resolve_duration, load_keys, save_keys, load_banned, _decode_duration
 )
-from backend.database import create_user, verify_user, get_user, init_db, get_db, set_subscription_expiry, ban_user, unban_user
+from backend.database import create_user, verify_user, get_user, init_db, get_db, set_subscription_expiry, ban_user, unban_user, reset_user_hwid
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 PUBLIC_DIR = BASE_DIR / "public"
@@ -580,6 +580,12 @@ async def api_admin_reset_hwid(req: AdminKeyAction, _=Depends(verify_admin)):
         save_keys(keys_data)
         return {"success": True, "message": "HWID reset"}
     return {"success": False, "message": "Key not found"}
+
+
+@app.post("/api/admin/reset-user-hwid")
+async def api_admin_reset_user_hwid(req: AdminUserAction, _=Depends(verify_admin)):
+    reset_user_hwid(req.username.strip().lower())
+    return {"success": True, "message": "User HWID reset"}
 
 
 MIME_TYPES = {

@@ -293,6 +293,7 @@
                         '<td><div style="display:flex;gap:4px;">',
                         '<button class="btn btn-danger btn-sm" onclick="doBanUser(\'' + u.username.replace(/'/g, "\\'") + '\')"' + (u.is_banned ? ' disabled' : '') + '>Ban</button>',
                         '<button class="btn btn-success btn-sm" onclick="doUnbanUser(\'' + u.username.replace(/'/g, "\\'") + '\')"' + (!u.is_banned ? ' disabled' : '') + '>Unban</button>',
+                        '<button class="btn btn-secondary btn-sm" onclick="doResetUserHwid(\'' + u.username.replace(/'/g, "\\'") + '\')">Reset HWID</button>',
                         '</div></td>',
                     ].join('');
                     tbody.appendChild(tr);
@@ -424,6 +425,14 @@
             try {
                 var data = await apiPost('/api/admin/unban-user', { username: username });
                 showToast(data.message || 'User unbanned', 'success');
+                loadUsers();
+            } catch (e) { showToast('Failed: ' + e.message, 'error'); }
+        }
+
+        async function doResetUserHwid(username) {
+            try {
+                var data = await apiPost('/api/admin/reset-user-hwid', { username: username });
+                showToast(data.message || 'HWID reset', 'success');
                 loadUsers();
             } catch (e) { showToast('Failed: ' + e.message, 'error'); }
         }

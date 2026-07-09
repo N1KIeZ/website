@@ -130,6 +130,10 @@ def verify_user(username, password, hwid=None):
     if hwid and is_hwid_banned(hwid):
         return {'success': False, 'message': 'Account is banned'}
 
+    # Check HWID lock – reject if HWID doesn't match stored one
+    if hwid and user['hwid'] and user['hwid'] != hwid:
+        return {'success': False, 'message': 'HWID mismatch - account locked to another device'}
+
     # Check subscription expiry
     if user['subscription_expiry']:
         try:
@@ -175,6 +179,16 @@ def unban_user(username):
     cursor.execute('UPDATE users SET is_banned = 0 WHERE username = ?', (username,))
     if user and user.get('hwid'):
         cursor.execute('DELETE FROM banned_hwids WHERE hwid = ?', (user['hwid'],))
+    conn.commit()
+    conn.close()
+    return True
+
+
+def reset_user_hwid(username):
+    """Clear a user's HWID so they can login from a new device"""
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute('UPDATE users SET hwid = NULL WHERE username = ?', (username,))
     conn.commit()
     conn.close()
     return True
