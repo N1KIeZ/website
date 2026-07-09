@@ -119,6 +119,40 @@
                     <p>No keys found.</p>
                 </div>
             </div>
+
+            <div class="card" style="margin-top:20px;">
+                <div class="card-header">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--turquoise)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                    <span class="card-title">Registered Users</span>
+                </div>
+                <div id="users-loading" class="loading" style="padding:20px;">
+                    <div class="loading-spinner"></div>
+                    Loading users...
+                </div>
+                <div id="users-table-wrap" class="table-wrap" style="display:none;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>License Key</th>
+                                <th>Duration / Expiry</th>
+                                <th>Created</th>
+                                <th>HWID</th>
+                                <th>Banned</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-tbody"></tbody>
+                    </table>
+                </div>
+                <div id="users-empty" class="empty-state hidden">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+                    </svg>
+                    <p>No registered users.</p>
+                </div>
+            </div>
         </div>
 
         <div class="footer" id="footer">nikita.gg &middot; admin panel</div>
@@ -218,6 +252,46 @@
             } catch (e) {
                 showToast('Failed to load dashboard: ' + e.message, 'error');
                 document.getElementById('loading-indicator').style.display = 'none';
+            }
+            loadUsers();
+        }
+
+        async function loadUsers() {
+            document.getElementById('users-loading').style.display = '';
+            document.getElementById('users-table-wrap').style.display = 'none';
+            document.getElementById('users-empty').classList.add('hidden');
+            try {
+                var data = await apiGet('/api/admin/users');
+                var users = data.users || [];
+                var tbody = document.getElementById('users-tbody');
+                tbody.innerHTML = '';
+                if (users.length === 0) {
+                    document.getElementById('users-loading').style.display = 'none';
+                    document.getElementById('users-empty').classList.remove('hidden');
+                    return;
+                }
+                document.getElementById('users-table-wrap').style.display = '';
+                document.getElementById('users-empty').classList.add('hidden');
+                users.forEach(function (u) {
+                    var tr = document.createElement('tr');
+                    var key = u.license_key || '-';
+                    var expiry = u.subscription_expiry ? new Date(u.subscription_expiry).toLocaleDateString() : 'lifetime';
+                    var created = u.created_at ? new Date(u.created_at).toLocaleDateString() : '-';
+                    var hwid = u.hwid || '-';
+                    var banned = u.is_banned ? '<span style="color:#ff6a7a;">yes</span>' : '<span style="color:#22c55e;">no</span>';
+                    tr.innerHTML = [
+                        '<td style="font-weight:500;">' + u.username + '</td>',
+                        '<td style="font-family:Consolas,monospace;font-size:11px;">' + key + '</td>',
+                        '<td style="font-size:12px;">' + expiry + '</td>',
+                        '<td style="font-size:12px;color:var(--text-dim);">' + created + '</td>',
+                        '<td style="font-family:Consolas,monospace;font-size:11px;color:var(--text-dim);">' + hwid + '</td>',
+                        '<td>' + banned + '</td>',
+                    ].join('');
+                    tbody.appendChild(tr);
+                });
+                document.getElementById('users-loading').style.display = 'none';
+            } catch (e) {
+                document.getElementById('users-loading').style.display = 'none';
             }
         }
 

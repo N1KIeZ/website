@@ -501,11 +501,35 @@ async def api_admin_login(req: AdminLoginRequest):
     return {"success": True, "token": token}
 
 
+def get_all_users_sqlite():
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute('SELECT username, email, license_key, subscription_expiry, is_banned, created_at, last_login, hwid FROM users')
+    rows = cursor.fetchall()
+    conn.close()
+    return [{
+        "username": r[0],
+        "email": r[1] or "",
+        "license_key": r[2] or "",
+        "subscription_expiry": r[3] or "",
+        "is_banned": bool(r[4]),
+        "created_at": r[5] or "",
+        "last_login": r[6] or "",
+        "hwid": r[7] or ""
+    } for r in rows]
+
+
 @app.get("/api/admin/keys")
 async def api_admin_keys(_=Depends(verify_admin)):
     keys = get_all_keys()
     stock = get_stock()
     return {"success": True, "keys": keys, "stock": stock}
+
+
+@app.get("/api/admin/users")
+async def api_admin_users(_=Depends(verify_admin)):
+    users = get_all_users_sqlite()
+    return {"success": True, "users": users}
 
 
 @app.post("/api/admin/ban")
