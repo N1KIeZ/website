@@ -150,6 +150,8 @@ class LoginKeyRequest(BaseModel):
 
 
 BOT_SECRET = os.environ.get("BOT_SECRET", "CHANGE_ME_TO_A_RANDOM_STRING")
+ADMIN_USER = "ad"
+ADMIN_PASS = "3595jttjggjfKKHGBivjdt66"
 import logging
 logger = logging.getLogger("uvicorn")
 logger.warning(f"BOT_SECRET loaded: len={len(BOT_SECRET)}, prefix={BOT_SECRET[:4]}...")
@@ -470,6 +472,73 @@ async def api_loader_verify(req: LoaderVerifyRequest):
         "success": True, "valid": True, "message": "Key activated",
         "duration": duration, "expires_at": expires_at,
     }
+
+
+# ---------- Admin endpoints ----------
+
+class AdminLoginRequest(BaseModel):
+    username: str
+    password: str
+
+class AdminKeyAction(BaseModel):
+    key: str
+
+def verify_admin(authorization: Optional[str] = Header(None)):
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Missing or invalid token")
+    token = authorization[7:]
+    username = verify_token(token)
+    if not username or username != "ad":
+        raise HTTPException(status_code=401, detail="Invalid admin token")
+    return username
+
+
+@app.post("/api/admin/login")
+async def api_admin_login(req: AdminLoginRequest):
+    if req.username.strip().lower() != ADMIN_USER or req.password.strip() != ADMIN_PASS:
+        raise HTTPException(status_code=401, detail="Invalid admin credentials")
+    token = create_token("ad")
+    return {"success": True, "token": token}
+
+
+@app.get("/api/admin/keys")
+async def api_admin_keys(_=Depends(verify_admin)):
+    keys = get_all_keys()
+    stock = get_stock()
+    return {"success": True, "keys": keys, "stock": stock}
+
+
+@app.post("/api/admin/ban")
+async def api_admin_ban(req: AdminKeyAction, _=Depends(verify_admin)):
+    ok = ban_key(req.key)
+    return {"success": ok, "message": "Key banned" if ok else "Key not found or already banned"}
+
+
+@app.post("/api/admin/unban")
+async def api_admin_unban(req: AdminKeyAction, _=Depends(verify_admin)):
+    ok = unban_key(req.key)
+    return {"success": ok, "message": "Key unbanned" if ok else "Key not found"}
+
+
+@app.post("/api/admin/reset-hwid")
+async def api_admin_reset_hwid(req: AdminKeyAction, _=Depends(verify_admin)):
+    keys_data = load_keys()
+    found = False
+    for k in keys_data["used"]:
+        if k["key"] == req.key.strip().upper():
+            k["hwid"] = None
+            found = True
+            break
+    for k in keys_data["available"]:
+        if k["key"] == req.key.strip().upper():
+            if "hwid" in k:
+                del k["hwid"]
+            found = True
+            break
+    if found:
+        save_keys(keys_data)
+        return {"success": True, "message": "HWID reset"}
+    return {"success": False, "message": "Key not found"}
 
 
 MIME_TYPES = {

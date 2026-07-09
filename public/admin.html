@@ -21,14 +21,14 @@
         <div id="admin-auth">
             <div class="auth-box">
                 <h2>Admin Access</h2>
-                <p>Enter your admin API key to manage licenses</p>
+                <p>Enter your admin credentials</p>
                 <div class="field">
-                    <div class="field-label">
-                        <label>API Key</label>
-                    </div>
-                    <div class="input-wrap">
-                        <input type="password" id="admin-key-input" placeholder="Enter admin key" autocomplete="off">
-                    </div>
+                    <div class="field-label"><label>Username</label></div>
+                    <div class="input-wrap"><input type="text" id="admin-user" placeholder="Username" autocomplete="off"></div>
+                </div>
+                <div class="field">
+                    <div class="field-label"><label>Password</label></div>
+                    <div class="input-wrap"><input type="password" id="admin-pass" placeholder="Password" autocomplete="off"></div>
                 </div>
                 <button class="btn btn-primary btn-block" onclick="loginAdmin()">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -73,27 +73,6 @@
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--turquoise)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
                     </svg>
-                    <span class="card-title">Generate Keys</span>
-                </div>
-                <div class="gen-controls">
-                    <div class="field">
-                        <div class="field-label"><label>Quantity</label></div>
-                        <input type="number" id="gen-amount" value="1" min="1" max="1000" step="1">
-                    </div>
-                    <button class="btn btn-primary" onclick="doGenerate()">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-                        </svg>
-                        Generate
-                    </button>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--turquoise)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
-                    </svg>
                     <span class="card-title">Key Management</span>
                 </div>
 
@@ -122,11 +101,11 @@
                             <tr>
                                 <th style="width:32px;"><input type="checkbox" id="select-all-header" onchange="toggleSelectAll(this)" style="accent-color:var(--turquoise);"></th>
                                 <th>License Key</th>
-                                <th style="width:90px;">Status</th>
+                                <th style="width:80px;">Status</th>
                                 <th style="width:110px;">HWID</th>
                                 <th style="width:80px;">Activated</th>
                                 <th style="width:80px;">Created</th>
-                                <th style="width:140px;">Actions</th>
+                                <th style="width:180px;">Actions</th>
                             </tr>
                         </thead>
                         <tbody id="keys-tbody"></tbody>
@@ -137,29 +116,27 @@
                     <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
                     </svg>
-                    <p>No keys found. Generate some keys to get started.</p>
+                    <p>No keys found.</p>
                 </div>
             </div>
         </div>
 
-        <div class="footer" id="footer">nikita.gg &middot; asymmetric license system</div>
+        <div class="footer" id="footer">nikita.gg &middot; admin panel</div>
     </div>
 
     <div class="toast-container" id="toast-container"></div>
 
-    <script src="js/key-system.js"></script>
     <script>
-        var ADMIN_STORAGE = 'admin_api_key';
-        var currentKey = localStorage.getItem(ADMIN_STORAGE) || '';
+        var TOKEN_KEY = 'admin_token';
+        var currentToken = localStorage.getItem(TOKEN_KEY) || '';
         var keysData = [];
         var selectedKeys = new Set();
 
         document.addEventListener('DOMContentLoaded', function () {
-            var saved = localStorage.getItem(ADMIN_STORAGE);
-            if (saved) {
-                currentKey = saved;
-                document.getElementById('admin-key-input').value = saved;
-                tryLogin();
+            if (currentToken) {
+                document.getElementById('admin-user').value = 'ad';
+                document.getElementById('admin-pass').value = '';
+                tryLoginAuto();
             }
         });
 
@@ -172,31 +149,58 @@
             setTimeout(function () { t.remove(); }, 3500);
         }
 
-        function loginAdmin() {
-            var key = document.getElementById('admin-key-input').value.trim();
-            if (!key) { showToast('Enter admin key', 'error'); return; }
-            currentKey = key;
-            tryLogin();
+        async function apiPost(path, body) {
+            var headers = { 'Content-Type': 'application/json' };
+            if (currentToken) headers['Authorization'] = 'Bearer ' + currentToken;
+            var res = await fetch(path, { method: 'POST', headers: headers, body: JSON.stringify(body) });
+            var data = await res.json();
+            if (!res.ok) throw new Error(data.detail || 'Request failed');
+            return data;
         }
 
-        async function tryLogin() {
+        async function apiGet(path) {
+            var headers = {};
+            if (currentToken) headers['Authorization'] = 'Bearer ' + currentToken;
+            var res = await fetch(path, { headers: headers });
+            if (!res.ok) { var data = await res.json(); throw new Error(data.detail || 'Request failed'); }
+            return await res.json();
+        }
+
+        async function loginAdmin() {
+            var user = document.getElementById('admin-user').value.trim();
+            var pass = document.getElementById('admin-pass').value;
+            if (!user || !pass) { showToast('Enter credentials', 'error'); return; }
             try {
-                await KeySystem.getStock(currentKey);
-                localStorage.setItem(ADMIN_STORAGE, currentKey);
+                var data = await apiPost('/api/admin/login', { username: user, password: pass });
+                currentToken = data.token;
+                localStorage.setItem(TOKEN_KEY, currentToken);
                 document.getElementById('admin-auth').classList.add('hidden');
                 document.getElementById('admin-dashboard').classList.remove('hidden');
                 loadDashboard();
             } catch (e) {
-                showToast('Invalid admin key or server unreachable', 'error');
+                showToast('Invalid credentials', 'error');
+            }
+        }
+
+        async function tryLoginAuto() {
+            try {
+                await apiGet('/api/admin/keys');
+                document.getElementById('admin-auth').classList.add('hidden');
+                document.getElementById('admin-dashboard').classList.remove('hidden');
+                loadDashboard();
+            } catch (e) {
+                localStorage.removeItem(TOKEN_KEY);
+                currentToken = '';
             }
         }
 
         function logoutAdmin() {
-            localStorage.removeItem(ADMIN_STORAGE);
-            currentKey = '';
+            localStorage.removeItem(TOKEN_KEY);
+            currentToken = '';
             document.getElementById('admin-auth').classList.remove('hidden');
             document.getElementById('admin-dashboard').classList.add('hidden');
-            document.getElementById('admin-key-input').value = '';
+            document.getElementById('admin-user').value = '';
+            document.getElementById('admin-pass').value = '';
             showToast('Logged out', 'info');
         }
 
@@ -205,16 +209,14 @@
             document.getElementById('table-wrap').style.display = 'none';
             document.getElementById('empty-state').classList.add('hidden');
             try {
-                var stock = await KeySystem.getStock(currentKey);
-                document.getElementById('stat-available').textContent = stock.available;
-                document.getElementById('stat-used').textContent = stock.used;
-                document.getElementById('stat-banned').textContent = stock.banned;
-
-                var result = await KeySystem.listKeys(currentKey);
-                keysData = result.keys || [];
+                var data = await apiGet('/api/admin/keys');
+                document.getElementById('stat-available').textContent = data.stock.available;
+                document.getElementById('stat-used').textContent = data.stock.used;
+                document.getElementById('stat-banned').textContent = data.stock.banned;
+                keysData = data.keys || [];
                 renderKeys(keysData);
             } catch (e) {
-                showToast('Failed to load dashboard', 'error');
+                showToast('Failed to load dashboard: ' + e.message, 'error');
                 document.getElementById('loading-indicator').style.display = 'none';
             }
         }
@@ -253,9 +255,10 @@
                     '<td>' + hwid + '</td>',
                     '<td style="font-size:11.5px;color:var(--text-dim);">' + activated + '</td>',
                     '<td style="font-size:11.5px;color:var(--text-dim);">' + created + '</td>',
-                    '<td><div style="display:flex;gap:4px;">',
+                    '<td><div style="display:flex;gap:4px;flex-wrap:wrap;">',
                     '<button class="btn btn-danger btn-sm" onclick="doBan(\'' + safeKey + '\')"' + (isBanned ? ' disabled' : '') + '>Ban</button>',
                     '<button class="btn btn-success btn-sm" onclick="doUnban(\'' + safeKey + '\')"' + (!isBanned ? ' disabled' : '') + '>Unban</button>',
+                    '<button class="btn btn-secondary btn-sm" onclick="doResetHwid(\'' + safeKey + '\')">Reset HWID</button>',
                     '</div></td>',
                 ].join('');
                 tbody.appendChild(tr);
@@ -302,40 +305,35 @@
             updateSelectionUI();
         }
 
-        async function doGenerate() {
-            var amount = parseInt(document.getElementById('gen-amount').value) || 1;
-            if (amount < 1 || amount > 1000) { showToast('Amount must be between 1 and 1000', 'error'); return; }
-            try {
-                var keys = await KeySystem.generateKeys(amount, currentKey);
-                showToast('Generated ' + keys.length + ' key(s) and copied to clipboard', 'success');
-                var keyList = keys.map(function (k) { return k.key; }).join('\n');
-                navigator.clipboard.writeText(keyList).catch(function () {});
-                document.getElementById('gen-amount').value = 1;
-                loadDashboard();
-            } catch (e) {
-                showToast('Failed to generate keys', 'error');
-            }
-        }
-
         async function doBan(key) {
             try {
-                var r = await KeySystem.banKey(key, currentKey);
-                showToast(r.success ? 'Key banned' : (r.message || 'Failed'), r.success ? 'success' : 'error');
+                var data = await apiPost('/api/admin/ban', { key: key });
+                showToast(data.message || 'Key banned', 'success');
                 loadDashboard();
-            } catch (e) { showToast('Failed', 'error'); }
+            } catch (e) { showToast('Failed: ' + e.message, 'error'); }
         }
 
         async function doUnban(key) {
             try {
-                var r = await KeySystem.unbanKey(key, currentKey);
-                showToast(r.success ? 'Key unbanned' : (r.message || 'Failed'), r.success ? 'success' : 'error');
+                var data = await apiPost('/api/admin/unban', { key: key });
+                showToast(data.message || 'Key unbanned', 'success');
                 loadDashboard();
-            } catch (e) { showToast('Failed', 'error'); }
+            } catch (e) { showToast('Failed: ' + e.message, 'error'); }
+        }
+
+        async function doResetHwid(key) {
+            try {
+                var data = await apiPost('/api/admin/reset-hwid', { key: key });
+                showToast(data.message || 'HWID reset', 'success');
+                loadDashboard();
+            } catch (e) { showToast('Failed: ' + e.message, 'error'); }
         }
 
         async function banSelected() {
             var keys = Array.from(selectedKeys);
-            for (var i = 0; i < keys.length; i++) { try { await KeySystem.banKey(keys[i], currentKey); } catch (_) {} }
+            for (var i = 0; i < keys.length; i++) {
+                try { await apiPost('/api/admin/ban', { key: keys[i] }); } catch (_) {}
+            }
             showToast('Banned ' + keys.length + ' key(s)', 'success');
             selectedKeys.clear();
             loadDashboard();
@@ -343,7 +341,9 @@
 
         async function unbanSelected() {
             var keys = Array.from(selectedKeys);
-            for (var i = 0; i < keys.length; i++) { try { await KeySystem.unbanKey(keys[i], currentKey); } catch (_) {} }
+            for (var i = 0; i < keys.length; i++) {
+                try { await apiPost('/api/admin/unban', { key: keys[i] }); } catch (_) {}
+            }
             showToast('Unbanned ' + keys.length + ' key(s)', 'success');
             selectedKeys.clear();
             loadDashboard();
@@ -351,9 +351,9 @@
 
         function exportCSV() {
             if (keysData.length === 0) { showToast('No keys to export', 'error'); return; }
-            var csv = ['Key,Status,HWID,Activated,Created'];
+            var csv = ['Key,Status,HWID,Activated,Created,Expires'];
             keysData.forEach(function (k) {
-                csv.push('"' + k.key + '","' + k.status + '","' + (k.hwid || '') + '","' + (k.activated_at || '') + '","' + (k.created || '') + '"');
+                csv.push('"' + k.key + '","' + k.status + '","' + (k.hwid || '') + '","' + (k.activated_at || '') + '","' + (k.created || '') + '","' + (k.expires_at || '') + '"');
             });
             var blob = new Blob([csv.join('\n')], { type: 'text/csv' });
             var url = URL.createObjectURL(blob);
