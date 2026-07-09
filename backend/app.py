@@ -195,7 +195,7 @@ async def api_register(req: RegisterRequest):
         raise HTTPException(status_code=400, detail=result["message"])
 
     # Create user in SQLite with bcrypt
-    ok = create_user(user, req.password.strip())
+    ok = create_user(user, req.password.strip(), license_key=req.key.strip().upper())
     if not ok:
         raise HTTPException(status_code=500, detail="Failed to create user")
 
@@ -233,6 +233,7 @@ async def api_login(req: LoginRequest):
             "user": {
                 "username": user_data.get("username", username),
                 "email": user_data.get("email", ""),
+                "key": user_data.get("license_key", ""),
                 "subscription_expiry": user_data.get("subscription_expiry", ""),
                 "created_at": user_data.get("created_at", ""),
                 "is_banned": user_data.get("is_banned", 0)
@@ -269,7 +270,20 @@ async def api_login_key(req: LoginKeyRequest):
 
 @app.get("/api/session")
 async def api_session(username: str = Depends(get_current_user)):
-    return {"success": True, "user": {"username": username}}
+    user = get_user(username)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return {
+        "success": True,
+        "user": {
+            "username": user["username"],
+            "email": user.get("email", ""),
+            "key": user.get("license_key", ""),
+            "subscription_expiry": user.get("subscription_expiry", ""),
+            "created_at": user.get("created_at", ""),
+            "is_banned": user.get("is_banned", 0)
+        }
+    }
 
 
 # ÔöÇÔöÇÔöÇ Existing endpoints ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ

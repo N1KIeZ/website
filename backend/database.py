@@ -18,12 +18,18 @@ def init_db():
             password TEXT NOT NULL,
             email TEXT,
             hwid TEXT,
+            license_key TEXT,
             subscription_expiry TEXT,
             is_banned INTEGER DEFAULT 0,
             created_at TEXT DEFAULT CURRENT_TIMESTAMP,
             last_login TEXT
         )
     ''')
+
+    try:
+        cursor.execute('ALTER TABLE users ADD COLUMN license_key TEXT')
+    except sqlite3.OperationalError:
+        pass
 
     conn.commit()
     conn.close()
@@ -32,7 +38,7 @@ def get_db():
     """Get database connection"""
     return sqlite3.connect(str(DB_FILE))
 
-def create_user(username, password, email=None):
+def create_user(username, password, email=None, license_key=None):
     """Create a new user with bcrypt-hashed password"""
     hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
     conn = get_db()
@@ -40,8 +46,8 @@ def create_user(username, password, email=None):
 
     try:
         cursor.execute(
-            'INSERT INTO users (username, password, email) VALUES (?, ?, ?)',
-            (username, hashed, email)
+            'INSERT INTO users (username, password, email, license_key) VALUES (?, ?, ?, ?)',
+            (username, hashed, email, license_key)
         )
         conn.commit()
         return True
