@@ -295,6 +295,7 @@
                 document.getElementById('users-loading').style.display = 'none';
             } catch (e) {
                 document.getElementById('users-loading').style.display = 'none';
+                showToast('Failed to load users: ' + e.message, 'error');
             }
         }
 
