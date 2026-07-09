@@ -142,6 +142,7 @@
                                 <th>Created</th>
                                 <th>HWID</th>
                                 <th>Banned</th>
+                                <th style="width:140px;">Actions</th>
                             </tr>
                         </thead>
                         <tbody id="users-tbody"></tbody>
@@ -289,6 +290,10 @@
                         '<td style="font-size:12px;color:var(--text-dim);">' + created + '</td>',
                         '<td style="font-family:Consolas,monospace;font-size:11px;color:var(--text-dim);">' + hwid + '</td>',
                         '<td>' + banned + '</td>',
+                        '<td><div style="display:flex;gap:4px;">',
+                        '<button class="btn btn-danger btn-sm" onclick="doBanUser(\'' + u.username.replace(/'/g, "\\'") + '\')"' + (u.is_banned ? ' disabled' : '') + '>Ban</button>',
+                        '<button class="btn btn-success btn-sm" onclick="doUnbanUser(\'' + u.username.replace(/'/g, "\\'") + '\')"' + (!u.is_banned ? ' disabled' : '') + '>Unban</button>',
+                        '</div></td>',
                     ].join('');
                     tbody.appendChild(tr);
                 });
@@ -404,6 +409,22 @@
                 var data = await apiPost('/api/admin/reset-hwid', { key: key });
                 showToast(data.message || 'HWID reset', 'success');
                 loadDashboard();
+            } catch (e) { showToast('Failed: ' + e.message, 'error'); }
+        }
+
+        async function doBanUser(username) {
+            try {
+                var data = await apiPost('/api/admin/ban-user', { username: username });
+                showToast(data.message || 'User banned', 'success');
+                loadUsers();
+            } catch (e) { showToast('Failed: ' + e.message, 'error'); }
+        }
+
+        async function doUnbanUser(username) {
+            try {
+                var data = await apiPost('/api/admin/unban-user', { username: username });
+                showToast(data.message || 'User unbanned', 'success');
+                loadUsers();
             } catch (e) { showToast('Failed: ' + e.message, 'error'); }
         }
 

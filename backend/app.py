@@ -17,7 +17,7 @@ from backend.key_system import (
     generate_keys as gen_keys, redeem_key, _duration_to_expiry, _key_is_expired,
     resolve_duration, load_keys, save_keys, load_banned, _decode_duration
 )
-from backend.database import create_user, verify_user, get_user, init_db, get_db, set_subscription_expiry
+from backend.database import create_user, verify_user, get_user, init_db, get_db, set_subscription_expiry, ban_user, unban_user
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 PUBLIC_DIR = BASE_DIR / "public"
@@ -483,6 +483,9 @@ class AdminLoginRequest(BaseModel):
 class AdminKeyAction(BaseModel):
     key: str
 
+class AdminUserAction(BaseModel):
+    username: str
+
 def verify_admin(authorization: Optional[str] = Header(None)):
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Missing or invalid token")
@@ -544,6 +547,18 @@ async def api_admin_ban(req: AdminKeyAction, _=Depends(verify_admin)):
 async def api_admin_unban(req: AdminKeyAction, _=Depends(verify_admin)):
     ok = unban_key(req.key)
     return {"success": ok, "message": "Key unbanned" if ok else "Key not found"}
+
+
+@app.post("/api/admin/ban-user")
+async def api_admin_ban_user(req: AdminUserAction, _=Depends(verify_admin)):
+    ok = ban_user(req.username.strip().lower())
+    return {"success": ok, "message": "User banned" if ok else "User not found"}
+
+
+@app.post("/api/admin/unban-user")
+async def api_admin_unban_user(req: AdminUserAction, _=Depends(verify_admin)):
+    ok = unban_user(req.username.strip().lower())
+    return {"success": ok, "message": "User unbanned" if ok else "User not found"}
 
 
 @app.post("/api/admin/reset-hwid")

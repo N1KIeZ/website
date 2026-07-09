@@ -36,6 +36,13 @@ def init_db():
     except sqlite3.OperationalError:
         pass
 
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS banned_hwids (
+            hwid TEXT PRIMARY KEY,
+            banned_at TEXT DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+
     conn.commit()
     conn.close()
 
@@ -120,6 +127,9 @@ def verify_user(username, password, hwid=None):
     if user['is_banned']:
         return {'success': False, 'message': 'Account is banned'}
 
+    if hwid and is_hwid_banned(hwid):
+        return {'success': False, 'message': 'Account is banned'}
+
     # Check subscription expiry
     if user['subscription_expiry']:
         try:
@@ -141,6 +151,45 @@ def verify_user(username, password, hwid=None):
         update_hwid(username, hwid)
 
     return {'success': True, 'message': 'Login successful', 'user': user}
+
+def ban_user(username):
+    """Ban a user and add their HWID to banned list"""
+    user = get_user(username)
+    if not user:
+        return False
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute('UPDATE users SET is_banned = 1 WHERE username = ?', (username,))
+    if user.get('hwid'):
+        cursor.execute('INSERT OR IGNORE INTO banned_hwids (hwid) VALUES (?)', (user['hwid'],))
+    conn.commit()
+    conn.close()
+    return True
+
+
+def unban_user(username):
+    """Unban a user and remove their HWID from banned list"""
+    user = get_user(username)
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute('UPDATE users SET is_banned = 0 WHERE username = ?', (username,))
+    if user and user.get('hwid'):
+        cursor.execute('DELETE FROM banned_hwids WHERE hwid = ?', (user['hwid'],))
+    conn.commit()
+    conn.close()
+    return True
+
+
+def is_hwid_banned(hwid):
+    """Check if a HWID is banned"""
+    if not hwid:
+        return False
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute('SELECT 1 FROM banned_hwids WHERE hwid = ?', (hwid,))
+    row = cursor.fetchone()
+    conn.close()
+    return row is not None
 
 # Initialize database on import
 init_db()
