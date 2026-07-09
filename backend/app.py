@@ -15,7 +15,7 @@ from typing import Optional
 from backend.key_system import (
     validate_key, ban_key, unban_key, get_stock, get_all_keys, is_valid_key,
     generate_keys as gen_keys, redeem_key, _duration_to_expiry, _key_is_expired,
-    resolve_duration, load_keys, save_keys, load_banned
+    resolve_duration, load_keys, save_keys, load_banned, _decode_duration
 )
 from backend.database import create_user, verify_user, get_user, init_db, get_db, set_subscription_expiry
 
