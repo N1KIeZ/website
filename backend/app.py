@@ -578,6 +578,12 @@ async def api_admin_reset_hwid(req: AdminKeyAction, _=Depends(verify_admin)):
             break
     if found:
         save_keys(keys_data)
+        # Also reset the linked user's HWID in the database
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute('UPDATE users SET hwid = NULL WHERE license_key = ?', (req.key.strip().upper(),))
+        conn.commit()
+        conn.close()
         return {"success": True, "message": "HWID reset"}
     return {"success": False, "message": "Key not found"}
 
