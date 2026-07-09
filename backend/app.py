@@ -150,6 +150,9 @@ class LoginKeyRequest(BaseModel):
 
 
 BOT_SECRET = os.environ.get("BOT_SECRET", "CHANGE_ME_TO_A_RANDOM_STRING")
+import logging
+logger = logging.getLogger("uvicorn")
+logger.warning(f"BOT_SECRET loaded: len={len(BOT_SECRET)}, prefix={BOT_SECRET[:4]}...")
 
 
 class BotGenKeyRequest(BaseModel):
@@ -316,6 +319,7 @@ async def health():
 @app.post("/api/bot/genkey")
 async def api_bot_genkey(req: BotGenKeyRequest):
     """Generate license keys. Called by the Discord bot."""
+    logger.warning(f"genkey secret check: got_len={len(req.secret)}, expected_len={len(BOT_SECRET)}, match={req.secret == BOT_SECRET}")
     if req.secret != BOT_SECRET:
         raise HTTPException(status_code=401, detail="Invalid bot secret")
     if req.amount < 1 or req.amount > 50:
