@@ -316,6 +316,12 @@ async def health():
 
 # ---------- Bot API endpoints ----------
 
+@app.get("/api/bot/check-secret")
+async def api_bot_check_secret():
+    """Temporary endpoint to verify BOT_SECRET is loaded."""
+    return {"secret_len": len(BOT_SECRET), "secret_prefix": BOT_SECRET[:4]}
+
+
 @app.post("/api/bot/genkey")
 async def api_bot_genkey(req: BotGenKeyRequest):
     """Generate license keys. Called by the Discord bot."""
