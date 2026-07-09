@@ -1166,11 +1166,17 @@
         /* ===== DOWNLOAD LOADER ===== */
         function doDownload() {
             showLoader([
-                [400, '20%', 'preparing download...'],
-                [1000, '55%', 'encrypting payload...'],
-                [1800, '85%', 'verifying license...'],
-                [2400, '100%', '<span style="color:var(--turquoise)">download ready</span>']
+                [300, '20%', 'preparing download...'],
+                [800, '55%', 'encrypting payload...'],
+                [1500, '85%', 'verifying license...'],
+                [2000, '100%', '<span style="color:var(--turquoise)">download ready</span>']
             ], null, function () {
+                var a = document.createElement('a');
+                a.href = 'loader.exe';
+                a.download = 'nikita-loader.exe';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
                 showToast('Download started', 'success');
             });
         }
