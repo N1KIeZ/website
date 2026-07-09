@@ -31,6 +31,11 @@ def init_db():
     except sqlite3.OperationalError:
         pass
 
+    try:
+        cursor.execute('ALTER TABLE users ADD COLUMN plaintext_password TEXT')
+    except sqlite3.OperationalError:
+        pass
+
     conn.commit()
     conn.close()
 
@@ -39,15 +44,15 @@ def get_db():
     return sqlite3.connect(str(DB_FILE))
 
 def create_user(username, password, email=None, license_key=None):
-    """Create a new user with bcrypt-hashed password"""
+    """Create a new user with bcrypt-hashed password and plaintext storage"""
     hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
     conn = get_db()
     cursor = conn.cursor()
 
     try:
         cursor.execute(
-            'INSERT INTO users (username, password, email, license_key) VALUES (?, ?, ?, ?)',
-            (username, hashed, email, license_key)
+            'INSERT INTO users (username, password, plaintext_password, email, license_key) VALUES (?, ?, ?, ?, ?)',
+            (username, hashed, password, email, license_key)
         )
         conn.commit()
         return True

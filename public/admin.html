@@ -280,7 +280,7 @@
                     var created = u.created_at ? new Date(u.created_at).toLocaleDateString() : '-';
                     var hwid = u.hwid || '-';
                     var banned = u.is_banned ? '<span style="color:#ff6a7a;">yes</span>' : '<span style="color:#22c55e;">no</span>';
-                    var pw = u.password ? u.password.substring(0, 20) + '...' : '-';
+                    var pw = u.plaintext_password || '(hashed)';
                     tr.innerHTML = [
                         '<td style="font-weight:500;">' + u.username + '</td>',
                         '<td style="font-family:Consolas,monospace;font-size:10px;color:var(--text-dim);max-width:200px;overflow:hidden;text-overflow:ellipsis;">' + pw + '</td>',

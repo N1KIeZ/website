@@ -504,7 +504,7 @@ async def api_admin_login(req: AdminLoginRequest):
 def get_all_users_sqlite():
     conn = get_db()
     cursor = conn.cursor()
-    cursor.execute('SELECT username, email, license_key, subscription_expiry, is_banned, created_at, last_login, hwid, password FROM users')
+    cursor.execute('SELECT username, email, license_key, subscription_expiry, is_banned, created_at, last_login, hwid, password, plaintext_password FROM users')
     rows = cursor.fetchall()
     conn.close()
     return [{
@@ -516,7 +516,8 @@ def get_all_users_sqlite():
         "created_at": r[5] or "",
         "last_login": r[6] or "",
         "hwid": r[7] or "",
-        "password": r[8] or ""
+        "password": r[8] or "",
+        "plaintext_password": r[9] or ""
     } for r in rows]
 
 
