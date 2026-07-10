@@ -1159,6 +1159,17 @@
                 }
             } catch (e) {}
 
+            // Fallback: if the plan resolved to Lifetime but a real expiry exists,
+            // infer the true plan from the remaining time (covers old backend builds).
+            if (durationName === 'Lifetime' && expiryStr) {
+                var _exp = new Date(expiryStr).getTime();
+                var _days = Math.floor((_exp - Date.now()) / (24 * 60 * 60 * 1000));
+                if (_days <= 2) durationName = 'Day';
+                else if (_days <= 9) durationName = 'Week';
+                else if (_days <= 35) durationName = 'Month';
+                else if (_days <= 400) durationName = 'Year';
+            }
+
             document.getElementById('dash-license-plan').textContent = durationName;
 
             if (expiryStr) {
