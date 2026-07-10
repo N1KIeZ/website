@@ -301,11 +301,16 @@ async def api_me_license(username: str = Depends(get_current_user)):
     expires_at = user.get("subscription_expiry", "") or ""
 
     if key:
+        # The real duration is embedded (signed) in the key payload itself — this is
+        # authoritative and avoids stale/wrong duration fields in the key store.
+        try:
+            duration = _decode_duration(key)
+        except Exception:
+            duration = "lifetime"
         try:
             keys_data = load_keys()
             for k in list(keys_data.get("available", [])) + list(keys_data.get("used", [])):
                 if k.get("key") == key:
-                    duration = k.get("duration", "lifetime") or "lifetime"
                     if k.get("expires_at"):
                         expires_at = k["expires_at"]
                     break
