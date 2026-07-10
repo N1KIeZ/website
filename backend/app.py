@@ -317,6 +317,24 @@ async def api_me_license(username: str = Depends(get_current_user)):
         except Exception:
             pass
 
+        # Some keys were generated with the lifetime duration char but a real
+        # expiry was stored. Infer the true plan from the remaining time so the
+        # dashboard shows the correct label instead of "Lifetime".
+        if duration == "lifetime" and expires_at:
+            try:
+                exp = datetime.fromisoformat(expires_at)
+                days = (exp - datetime.now()).days
+                if days <= 2:
+                    duration = "1 day"
+                elif days <= 9:
+                    duration = "1 week"
+                elif days <= 35:
+                    duration = "1 month"
+                elif days <= 400:
+                    duration = "1 year"
+            except Exception:
+                pass
+
     return {
         "success": True,
         "key": key,
