@@ -289,6 +289,38 @@ async def api_session(username: str = Depends(get_current_user)):
     }
 
 
+@app.get("/api/me/license")
+async def api_me_license(username: str = Depends(get_current_user)):
+    """Return the real duration/expiry for the current user's license key."""
+    user = get_user(username)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    key = user.get("license_key", "") or ""
+    duration = "lifetime"
+    expires_at = user.get("subscription_expiry", "") or ""
+
+    if key:
+        try:
+            keys_data = load_keys()
+            for k in list(keys_data.get("available", [])) + list(keys_data.get("used", [])):
+                if k.get("key") == key:
+                    duration = k.get("duration", "lifetime") or "lifetime"
+                    if k.get("expires_at"):
+                        expires_at = k["expires_at"]
+                    break
+        except Exception:
+            pass
+
+    return {
+        "success": True,
+        "key": key,
+        "duration": duration,
+        "expires_at": expires_at,
+        "subscription_expiry": user.get("subscription_expiry", "") or ""
+    }
+
+
 # ÔöÇÔöÇÔöÇ Existing endpoints ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
 @app.post("/api/validate")
 async def api_validate(req: ValidateRequest):

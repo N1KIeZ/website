@@ -1143,16 +1143,17 @@
                 document.getElementById('dash-activity-time').textContent = new Date(joined).toLocaleString();
             }
 
-            // Resolve the REAL key duration / expiry from the key store
+            // Resolve the REAL key duration / expiry from the key store (server-side lookup)
             var expiryStr = CURRENT_USER_DATA.subscription_expiry || '';
             var durationName = 'Lifetime';
             try {
-                var keysRes = await fetch('/api/keys');
-                var keysData = await keysRes.json();
-                var myKey = (keysData.keys || []).find(function (k) { return k.key === CURRENT_USER_DATA.key; });
-                if (myKey) {
-                    if (myKey.expires_at) expiryStr = myKey.expires_at;
-                    if (myKey.duration && myKey.duration !== 'lifetime') durationName = myKey.duration;
+                var licRes = await fetch('/api/me/license', {
+                    headers: { 'Authorization': 'Bearer ' + (localStorage.getItem('ng_token') || '') }
+                });
+                if (licRes.ok) {
+                    var lic = await licRes.json();
+                    if (lic.duration && lic.duration !== 'lifetime') durationName = lic.duration;
+                    if (lic.expires_at) expiryStr = lic.expires_at;
                 }
             } catch (e) {}
 
