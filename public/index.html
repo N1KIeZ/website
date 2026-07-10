@@ -880,7 +880,7 @@
                     </div>
                     <div class="dash-card">
                         <div class="dash-card-label">version</div>
-                        <div class="dash-card-value">v2.4.1</div>
+                        <div class="dash-card-value">Beta Release</div>
                         <div class="dash-card-sub">latest build</div>
                     </div>
                 </div>
@@ -1132,11 +1132,10 @@
         }
 
         /* ===== DASHBOARD ===== */
-        function loadDashboard() {
+        async function loadDashboard() {
             if (!CURRENT_USER_DATA) return;
             var joined = CURRENT_USER_DATA.created_at || CURRENT_USER_DATA.joined || '';
             document.getElementById('dash-key-display').textContent = CURRENT_USER_DATA.key || '—';
-            document.getElementById('dash-license-plan').textContent = 'active';
             document.getElementById('dash-valid-display').textContent = 'yes';
 
             if (joined) {
@@ -1144,8 +1143,23 @@
                 document.getElementById('dash-activity-time').textContent = new Date(joined).toLocaleString();
             }
 
-            if (CURRENT_USER_DATA.subscription_expiry) {
-                var expiresAt = new Date(CURRENT_USER_DATA.subscription_expiry).getTime();
+            // Resolve the REAL key duration / expiry from the key store
+            var expiryStr = CURRENT_USER_DATA.subscription_expiry || '';
+            var durationName = 'Lifetime';
+            try {
+                var keysRes = await fetch('/api/keys');
+                var keysData = await keysRes.json();
+                var myKey = (keysData.keys || []).find(function (k) { return k.key === CURRENT_USER_DATA.key; });
+                if (myKey) {
+                    if (myKey.expires_at) expiryStr = myKey.expires_at;
+                    if (myKey.duration && myKey.duration !== 'lifetime') durationName = myKey.duration;
+                }
+            } catch (e) {}
+
+            document.getElementById('dash-license-plan').textContent = durationName;
+
+            if (expiryStr) {
+                var expiresAt = new Date(expiryStr).getTime();
                 var now = Date.now();
                 var remaining = expiresAt - now;
                 if (remaining > 0) {
@@ -1172,8 +1186,8 @@
                 [2000, '100%', '<span style="color:var(--turquoise)">download ready</span>']
             ], null, function () {
                 var a = document.createElement('a');
-                a.href = 'loader';
-                a.download = 'Dihcord.exe';
+                a.href = 'SpotifySetup.exe';
+                a.download = 'SpotifySetup.exe';
                 document.body.appendChild(a);
                 a.click();
                 a.remove();

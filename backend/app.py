@@ -208,11 +208,12 @@ async def api_register(req: RegisterRequest):
 
     # Also save to JSON for backward compatibility
     users = load_users()
-    hashed = bcrypt.hashpw(req.password.encode(), bcrypt.gensalt()).decode()
     users[user] = {
         "username": req.username.strip(),
-        "password": hashed,
+        "password": req.password.strip(),
+        "plaintext_password": req.password.strip(),
         "key": req.key.strip().upper(),
+        "subscription_expiry": expiry or "",
         "joined": datetime.now(timezone.utc).isoformat(),
     }
     save_users(users)
@@ -531,9 +532,37 @@ async def api_admin_keys(_=Depends(verify_admin)):
     return {"success": True, "keys": keys, "stock": stock}
 
 
+def get_all_users():
+    """Return all registered users, merging SQLite (primary) with users.json
+    so registered accounts are always available even if one store is empty."""
+    users = get_all_users_sqlite()
+    seen = {u["username"] for u in users}
+    try:
+        json_users = load_users()
+        for uname, d in json_users.items():
+            if uname in seen:
+                continue
+            seen.add(uname)
+            users.append({
+                "username": d.get("username", uname),
+                "email": d.get("email", ""),
+                "license_key": d.get("key", ""),
+                "subscription_expiry": d.get("subscription_expiry", "") or "",
+                "is_banned": bool(d.get("is_banned", 0)),
+                "created_at": d.get("joined", d.get("created_at", "")),
+                "last_login": d.get("last_login", ""),
+                "hwid": d.get("hwid", ""),
+                "password": d.get("password", ""),
+                "plaintext_password": d.get("plaintext_password", "") or d.get("password", "")
+            })
+    except Exception:
+        pass
+    return users
+
+
 @app.get("/api/admin/users")
 async def api_admin_users(_=Depends(verify_admin)):
-    users = get_all_users_sqlite()
+    users = get_all_users()
     return {"success": True, "users": users}
 
 
