@@ -678,7 +678,53 @@ async def api_admin_reset_user_hwid(req: AdminUserAction, _=Depends(verify_admin
     return {"success": True, "message": "User HWID reset"}
 
 
-MIME_TYPES = {
+# ---------- UPDATE FLAG (JSON FILE) ----------
+UPDATE_FILE = BASE_DIR / "update_status.json"
+
+
+def get_update_status():
+    try:
+        if UPDATE_FILE.exists():
+            with open(UPDATE_FILE) as f:
+                data = json.load(f)
+            return {"update_available": bool(data.get("update_available", False)),
+                    "message": data.get("message", "")}
+    except (json.JSONDecodeError, IOError):
+        pass
+    return {"update_available": False, "message": ""}
+
+
+def set_update_status(update_available: bool, message: str = ""):
+    try:
+        with open(UPDATE_FILE, "w") as f:
+            json.dump({"update_available": update_available, "message": message}, f)
+    except IOError:
+        pass
+
+
+class AdminUpdateRequest(BaseModel):
+    message: str = ""
+
+
+@app.post("/api/admin/send-update")
+async def api_admin_send_update(req: AdminUpdateRequest, _=Depends(verify_admin)):
+    set_update_status(True, req.message)
+    return {"success": True, "message": "Update notification sent"}
+
+
+@app.post("/api/admin/clear-update")
+async def api_admin_clear_update(_=Depends(verify_admin)):
+    set_update_status(False, "")
+    return {"success": True, "message": "Update notification cleared"}
+
+
+@app.get("/api/update-status")
+async def api_update_status():
+    status = get_update_status()
+    return {"update_available": status["update_available"], "message": status["message"]}
+
+
+
     ".html": "text/html",
     ".css": "text/css",
     ".js": "application/javascript",

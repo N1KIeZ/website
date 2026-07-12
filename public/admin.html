@@ -155,6 +155,24 @@
                     <p>No registered users.</p>
                 </div>
             </div>
+            <div class="card" style="margin-top:20px;">
+                <div class="card-header">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--turquoise)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/>
+                    </svg>
+                    <span class="card-title">System</span>
+                </div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;padding:6px 4px;">
+                    <button class="btn btn-warning btn-sm" onclick="sendUpdate()">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        Send Update
+                    </button>
+                    <button class="btn btn-secondary btn-sm" onclick="clearUpdate()">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
+                        Clear Update
+                    </button>
+                </div>
+            </div>
         </div>
 
         <div class="footer" id="footer">nikita.gg &middot; admin panel</div>
@@ -455,6 +473,20 @@
             showToast('Unbanned ' + keys.length + ' key(s)', 'success');
             selectedKeys.clear();
             loadDashboard();
+        }
+
+        async function sendUpdate() {
+            try {
+                var data = await apiPost('/api/admin/send-update', { message: '' });
+                showToast(data.message || 'Update notification sent', 'success');
+            } catch (e) { showToast('Failed: ' + e.message, 'error'); }
+        }
+
+        async function clearUpdate() {
+            try {
+                var data = await apiPost('/api/admin/clear-update', {});
+                showToast(data.message || 'Update notification cleared', 'success');
+            } catch (e) { showToast('Failed: ' + e.message, 'error'); }
         }
 
         function exportCSV() {
