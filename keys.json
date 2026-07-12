@@ -1,1 +1,29 @@
-{"available": [], "used": []}
+{
+  "available": [
+    {
+      "key": "VKKQX-M22UD-L683C-GJE5H-H9DQ2-DHRHV-MK86R-BHH6Q-N7C9E-GMBCV-GBN6X-CDTBN-3S",
+      "duration": "1 day",
+      "expires_at": "2026-07-11T09:57:58.901289",
+      "created": "2026-07-10T09:57:58.901563"
+    },
+    {
+      "key": "TQCZQ-A5DSW-HPTAF-SS382-FEED6-D9XGE-GQP2Q-6UZ69-EY4EB-T8ZPK-F6LZ8-AWMZ9-3A",
+      "duration": "1 week",
+      "expires_at": "2026-07-17T09:57:58.902664",
+      "created": "2026-07-10T09:57:58.902852"
+    },
+    {
+      "key": "EUZS6-S5BPM-DC6ZT-HWJVU-KT9FF-B3THA-G6S8C-MP8QW-3F32N-FWPQD-8WAZG-ATCKK-CA",
+      "duration": "1 month",
+      "expires_at": "2026-08-09T09:57:58.903264",
+      "created": "2026-07-10T09:57:58.903433"
+    },
+    {
+      "key": "QZ5SE-VQCML-KV3V2-XVFP8-SYL94-43K9F-ZLMBV-8VFDF-E9FTY-N9EBX-GN8FU-LTA7P-BA",
+      "duration": "lifetime",
+      "expires_at": null,
+      "created": "2026-07-10T09:57:58.904020"
+    }
+  ],
+  "used": []
+}
