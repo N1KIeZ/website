@@ -725,6 +725,7 @@ async def api_update_status():
 
 
 
+MIME_TYPES = {
     ".html": "text/html",
     ".css": "text/css",
     ".js": "application/javascript",
